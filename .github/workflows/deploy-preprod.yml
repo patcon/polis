@@ -8,9 +8,9 @@ on:
 
   paths:
     - .github/workflows/deploy-preprod.yml
-    - client-admin
-    - client-participation
-    - client-report
+    - client/admin
+    - client/participation
+    - client/report
 
 
 jobs:

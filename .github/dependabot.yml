@@ -4,7 +4,7 @@ version: 2
 updates:
   # JAVASCRIPT package.json updates
 
-  - directory: "/client-admin"
+  - directory: "/client/admin"
     package-ecosystem: "npm"
     labels: ["dependencies", "🔩 p:client-admin"]
     target-branch: "dev"
@@ -29,7 +29,7 @@ updates:
     ignore:
       - dependency-name: "*"
 
-  - directory: "/client-participation"
+  - directory: "/client/participation"
     package-ecosystem: "npm"
     labels: ["dependencies", "🔩 p:client-participation"]
     target-branch: "dev"
@@ -38,7 +38,7 @@ updates:
     ignore:
       - dependency-name: "*"
 
-  - directory: "/client-report"
+  - directory: "/client/report"
     package-ecosystem: "npm"
     labels: ["dependencies", "🔩 p:client-report"]
     target-branch: "dev"
@@ -70,21 +70,21 @@ updates:
     schedule:
       interval: "weekly"
 
-  - directory: "/client-admin"
+  - directory: "/client/admin"
     package-ecosystem: "docker"
     labels: ["dependencies", "⚒️ infrastructure", "🔩 p:client-admin"]
     target-branch: "dev"
     schedule:
       interval: "weekly"
 
-  - directory: "/client-participation"
+  - directory: "/client/participation"
     package-ecosystem: "docker"
     labels: ["dependencies", "⚒️ infrastructure", "🔩 p:client-participation"]
     target-branch: "dev"
     schedule:
       interval: "weekly"
 
-  - directory: "/client-report"
+  - directory: "/client/report"
     package-ecosystem: "docker"
     labels: ["dependencies", "⚒️ infrastructure", "🔩 p:client-report"]
     target-branch: "dev"

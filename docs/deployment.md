@@ -21,9 +21,9 @@ Finally, for local development, these repos have hot-reload able servers you can
 
    [dir-server]: /server
    [dir-math]: /math
-   [dir-participation]: /client-participation
-   [dir-admin]: /client-admin
-   [dir-report]: /client-report
+   [dir-participation]: /client/participation
+   [dir-admin]: /client/admin
+   [dir-report]: /client/report
 
 ### Environment variables and configuration
 
@@ -57,9 +57,9 @@ TODO Compile complete starter template somewhere in this repo...
    * This includes instructions on setting up a local postgres database
 2) Get the math server running using the Readme here: [`/math`][dir-math]
 3) Build client repo assets using the instructions in the respective Readmes:
-   * [`/client-participation`][dir-participation]
-   * [`/client-admin`][dir-admin]
-   * [`/client-report`][dir-report]
+   * [`/client/participation`][dir-participation]
+   * [`/client/admin`][dir-admin]
+   * [`/client/report`][dir-report]
 4) Each of the above repos also contains instructions for running a server with HMR; By default, the server should forward requests for these compiled assets to the HMR server.
 
 ## Basic/Manual deployment
@@ -102,7 +102,7 @@ We use Google to automatically translate submitted comments into the language of
 1. Configure `SHOULD_USE_TRANSLATION_API=true` within `server/docker-dev.env`
 
    [translate-ui]: #translating-the-user-interface
-   [translate-strings]: /client-participation/js/strings/en_us.js#L96-L98
+   [translate-strings]: /client/participation/js/strings/en_us.js#L96-L98
    [gtranslate-quickstart]: https://cloud.google.com/translate/docs/basic/setup-basic
    [base64-encoder]: https://codepen.io/bsngr/pen/awuDh
 

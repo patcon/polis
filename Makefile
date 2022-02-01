@@ -16,7 +16,7 @@ e2e-install: e2e/node_modules ## Install Cypress E2E testing tools
 
 e2e-prepare: ## Prepare to run Cypress E2E tests
 	@# Testing embeds requires a override of a file prior to build.
-	cp e2e/cypress/fixtures/html/embed.html client-admin/embed.html
+	cp e2e/cypress/fixtures/html/embed.html client/admin/embed.html
 
 e2e-run-minimal: ## Run E2E tests: minimal (smoke test)
 	$(E2E_RUN) npm run e2e:minimal

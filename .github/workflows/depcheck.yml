@@ -4,7 +4,7 @@ on:
     types: ["opened", "reopened", "synchronize"]
     paths:
       - .github/workflows/depcheck.yml
-      - client-admin/**
+      - client/admin/**
 
 jobs:
   run:
@@ -45,12 +45,12 @@ jobs:
         run: npm install -g depcheck
 
       - name: Install project dependencies
-        working-directory: client-admin
+        working-directory: client/admin
         run: npm install
 
       - name: Run depcheck and save output
         id: depcheck
-        working-directory: client-admin
+        working-directory: client/admin
         env:
           # See: https://github.com/depcheck/depcheck#special
           DEPCHECK_SPECIALS: "webpack,babel,eslint,prettier,bin"

@@ -1,5 +1,5 @@
 describe('Embedded Conversations', () => {
-  // This test requires overriding client-admin/embed.html with
+  // This test requires overriding client/admin/embed.html with
   // e2e/cypress/fixtures/html/embeds.html
   const POLIS_DOMAIN = Cypress.config().baseUrl.replace('https://', '')
   const CONVO_DESCRIPTION = 'This is dummy description for embed tests.'

@@ -32,7 +32,7 @@ describe('Interface internationalization', () => {
       uk: 'uk',
     }
     for (let [lang, filename] of Object.entries(locales)) {
-      cy.readFile(`../client-participation/js/strings/${filename}.js`).then(contents => {
+      cy.readFile(`../client/participation/js/strings/${filename}.js`).then(contents => {
         // The string key we're using to validate working.
         const targetStringKey = 'writePrompt'
         const string = eval(contents)[targetStringKey] || ''

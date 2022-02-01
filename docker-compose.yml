@@ -92,7 +92,7 @@ services:
     container_name: polis-client-participation
     image: compdem/polis-client-participation:${TAG}
     build:
-      context: ./client-participation
+      context: ./client/participation
       args:
         GIT_HASH: "${GIT_HASH}"
 
@@ -100,7 +100,7 @@ services:
     container_name: polis-client-admin
     image: compdem/polis-client-admin:${TAG}
     build:
-      context: ./client-admin
+      context: ./client/admin
       args:
         GIT_HASH: "${GIT_HASH}"
 
@@ -108,7 +108,7 @@ services:
     container_name: polis-client-report
     image: compdem/polis-client-report:${TAG}
     build:
-      context: ./client-report
+      context: ./client/report
       args:
         GIT_HASH: "${GIT_HASH}"
 

@@ -29,9 +29,9 @@ jobs:
           ${{ runner.os }}-node-
 
     - name: "Install & Build: client-admin"
-      working-directory: client-admin
+      working-directory: client/admin
       run: npm install
 
     - name: "ESLint: client-admin"
-      working-directory: client-admin
+      working-directory: client/admin
       run: npm run lint

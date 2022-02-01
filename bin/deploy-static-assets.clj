@@ -120,12 +120,12 @@
       [(file-upload-request bucket spec file)])))
 
 ;(spec-requests "preprod.pol.is"
-   ;{:cached-path "client-admin/dist/cached"
+   ;{:cached-path "client/admin/dist/cached"
     ;:pattern #".*\.js"
     ;:ContentEncoding "gzip"})
 
 ;(spec-requests "preprod.pol.is"
-   ;{:cached-path "client-participation/dist/cached"
+   ;{:cached-path "client/participation/dist/cached"
     ;:pattern #".*/css/.*\.css"})
 
 ;(spec-requests "preprod.pol.is"
@@ -140,37 +140,37 @@
 (def deploy-specs
   [
    ;; client admin
-   {:cached-path "client-admin/dist/cached"
+   {:cached-path "client/admin/dist/cached"
     ;; <version>/js/* -> cached/<version>/js/**
     :pattern #".*\.js"
     :ContentEncoding "gzip"}
-   {:path "client-admin/dist/"
+   {:path "client/admin/dist/"
     :pattern #".*\.html"}
 
    ;; participation client files
-   {:path "client-participation/dist/"
+   {:path "client/participation/dist/"
     :pattern #".*\.html"}
-   {:path "client-participation/dist/"
+   {:path "client/participation/dist/"
     :pattern #"twitterAuthReturn\.html"
     :ContentEncoding "gzip"}
-   {:path "client-participation/dist/"
+   {:path "client/participation/dist/"
     :pattern #"embedPreprod\.js"}
-   {:path "client-participation/dist/"
+   {:path "client/participation/dist/"
     :pattern #"embed\.js"}
-   {:cached-path "client-participation/dist/cached"
+   {:cached-path "client/participation/dist/cached"
     :pattern #".*/css/.*\.css"}
-   {:cached-path "client-participation/dist/cached"
+   {:cached-path "client/participation/dist/cached"
     :pattern #".*\.(html|svg)"}
-   {:cached-path "client-participation/dist/cached"
+   {:cached-path "client/participation/dist/cached"
     :pattern #".*/js/.*\.js"
     :ContentEncoding "gzip"}])
    
    ;; client report
-   ;{:path "client-report/dest-root/**/js/**"
+   ;{:path "client/report/dest-root/**/js/**"
     ;:ContentEncoding "gzip"
     ;:CacheControl cache-buster
     ;:subdir cached-subdir}
-   ;{:path "client-report/dest-root/**/*.html"}]
+   ;{:path "client/report/dest-root/**/*.html"}]
 
 
 ; Inspect how this parses to AWS S3 requests

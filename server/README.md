@@ -57,7 +57,7 @@ We recommend installing [nvm](https://github.com/creationix/nvm) so that you can
     ```sh
     $ ./x
     ```
-1. In another shell, start the [client-admin](../client-admin). Follow installation directions on the component README.
+1. In another shell, start the [client-admin](../client/admin). Follow installation directions on the component README.
     ```
     $ ./x
     ```
