@@ -1,9 +1,11 @@
 import * as globals from "../components/globals";
 import _ from "lodash";
 import createHull from "hull.js";
-import * as d3 from "../../js/3rdparty/d3.v4.min.js";
 
-import { forceSimulation, forceCollide, forceX, forceY } from 'd3-force';
+import { forceManyBody, forceSimulation, forceCollide, forceX, forceY } from 'd3-force';
+import { scaleLinear } from 'd3-scale';
+
+const d3 = { forceManyBody, forceSimulation, forceCollide, forceX, forceY, scaleLinear };
 
 
 
@@ -103,10 +105,10 @@ function mixedForce(arrays, strength) {
     Array.prototype.push.apply(allPoints, a);
   }
 
-  const force = forceSimulation(allPoints).stop()
-      .force('x', forceX(d => d.x))
-      .force('y', forceY(d => d.y))
-      .force('collide', forceCollide(function(d) {
+  const force = d3.forceSimulation(allPoints).stop()
+      .force('x', d3.forceX(d => d.x))
+      .force('y', d3.forceY(d => d.y))
+      .force('collide', d3.forceCollide(function(d) {
         return d.collideRadius || 10;
       }))
       .force("charge", d3.forceManyBody().strength(strength));
