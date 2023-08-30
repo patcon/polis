@@ -1,7 +1,7 @@
 // Copyright (C) 2012-present, The Authors. This program is free software: you can redistribute it and/or  modify it under the terms of the GNU Affero General Public License, version 3, as published by the Free Software Foundation. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more details. You should have received a copy of the GNU Affero General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var autosize = require("autosize");
-var constants = require("../util/constants");
+var Constants = require("../util/constants");
 var CurrentUserModel = require("../stores/currentUser");
 var template = require("../templates/comment-form.handlebars");
 var display = require("../util/display");
@@ -15,7 +15,7 @@ var Strings = require("../strings");
 var Utils = require("../util/utils");
 var $ = require("jquery");
 
-var CHARACTER_LIMIT = constants.CHARACTER_LIMIT;
+var CHARACTER_LIMIT = Constants.CHARACTER_LIMIT;
 
 // var CommentsByMeView = Handlebones.CollectionView.extend({
 //   modelView: CommentView
@@ -56,7 +56,7 @@ module.exports = Handlebones.ModelView.extend({
     if (btnBg) {
       ctx.customBtnStyles = "background-color: " + btnBg + ";";
     }
-    ctx.charLimitString = Strings.tipCharLimit.replace("{{char_limit}}", constants.CHARACTER_LIMIT);
+    ctx.charLimitString = Strings.tipCharLimit.replace("{{char_limit}}", Constants.CHARACTER_LIMIT);
     ctx.is_anon = window.preload.firstConv.is_anon;
     return ctx;
   },
@@ -80,7 +80,7 @@ module.exports = Handlebones.ModelView.extend({
     }
   },
   updateCharLimitExceededMessage: function(formText) {
-    if (formText.length > constants.CHARACTER_LIMIT) {
+    if (formText.length > Constants.CHARACTER_LIMIT) {
       this.showMessage("#char_limit_exceeded_message");
     } else {
       this.hideMessage("#char_limit_exceeded_message");
@@ -296,7 +296,7 @@ module.exports = Handlebones.ModelView.extend({
     var that = this; //that = the view
     attrs.pid = "mypid";
     attrs.conversation_id = this.conversation_id;
-    attrs.vote = constants.REACTIONS.AGREE; // participants' comments are automatically agreed to. Needed for now since math assumes every comment has at least one vote.
+    attrs.vote = Constants.REACTIONS.AGREE; // participants' comments are automatically agreed to. Needed for now since math assumes every comment has at least one vote.
 
     if (/^\s*$/.exec(attrs.txt)) {
       alert(Strings.commentIsEmpty);
