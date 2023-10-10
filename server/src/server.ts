@@ -13887,6 +13887,35 @@ Thanks for using Polis!
     });
   }
 
+  async function updateTutorialDoneByEmail(email: string) {
+    try {
+      // Step 1: Retrieve uid by email
+      const userResult = await pg.queryP_readOnly(
+        "SELECT uid FROM users WHERE email = $1 LIMIT 1",
+        [email]
+      );
+  
+      if (!userResult || !userResult.rows || !userResult.rows.length) {
+        console.error('No user found with the provided email:', email);
+        return;  // Or handle this case as appropriate for your application
+      }
+  
+      const uid = userResult.rows[0].uid;
+  
+      // Step 2: Update tutorial_done for retrieved uid
+      const updateResult = await pg.queryP(
+        "UPDATE users SET tutorialprogress = 1 WHERE uid = $1",
+        [uid]
+      );
+  
+      console.log('User tutorial_done updated successfully:', updateResult);
+      return updateResult;
+    } catch (err) {
+      console.error('Error updating tutorial_done for user by email:', err);
+      throw err;  // or handle error as appropriate for your application
+    }
+  }
+
   function middleware_log_request_body(
     req: { body: any; path: string },
     res: any,
@@ -13977,6 +14006,7 @@ Thanks for using Polis!
     fetchIndexForReportPage,
     fetchIndexWithoutPreloadData,
     getPidForParticipant,
+    updateTutorialDoneByEmail,
     haltOnTimeout,
     HMAC_SIGNATURE_PARAM_NAME,
     hostname,

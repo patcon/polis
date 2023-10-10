@@ -136,6 +136,7 @@ async function getUser(
     site_ids: [info.site_id],
     created: Number(info.created),
     isPolisDev: isPolisDev(uid),
+    tutorialprogress: info.tutorialprogress,
   };
 }
 
@@ -309,6 +310,35 @@ async function updateTutorialDoneByEmail(email: string) {
   }
 }
 
+async function updateTutorialDoneByEmail(email: string) {
+  try {
+    // Step 1: Retrieve uid by email
+    const userResult = await pg.queryP_readOnly(
+      "SELECT uid FROM users WHERE email = $1 LIMIT 1",
+      [email]
+    );
+
+    if (!userResult || !userResult.rows || !userResult.rows.length) {
+      console.error('No user found with the provided email:', email);
+      return;  // Or handle this case as appropriate for your application
+    }
+
+    const uid = userResult.rows[0].uid;
+
+    // Step 2: Update tutorial_done for retrieved uid
+    const updateResult = await pg.queryP(
+      "UPDATE users SET tutorialprogress = 1 WHERE uid = $1",
+      [uid]
+    );
+
+    console.log('User tutorial_done updated successfully:', updateResult);
+    return updateResult;
+  } catch (err) {
+    console.error('Error updating tutorial_done for user by email:', err);
+    throw err;  // or handle error as appropriate for your application
+  }
+}
+
 
 function getSocialInfoForUsers(uids: any[], zid: any) {
   uids = _.uniq(uids);
@@ -324,17 +354,17 @@ function getSocialInfoForUsers(uids: any[], zid: any) {
   return pg.queryP_metered_readOnly(
     "getSocialInfoForUsers",
     "with " +
-      "x as (select * from xids where uid in (" +
-      uidString +
-      ") and owner  in (select org_id from conversations where zid = ($1))), " +
-      "fb as (select * from facebook_users where uid in (" +
-      uidString +
-      ")), " +
-      "tw as (select * from twitter_users where uid in (" +
-      uidString +
-      ")), " +
-      "foo as (select *, coalesce(fb.uid, tw.uid) as foouid from fb full outer join tw on tw.uid = fb.uid) " +
-      "select *, coalesce(foo.foouid, x.uid) as uid from foo full outer join x on x.uid = foo.foouid;",
+    "x as (select * from xids where uid in (" +
+    uidString +
+    ") and owner  in (select org_id from conversations where zid = ($1))), " +
+    "fb as (select * from facebook_users where uid in (" +
+    uidString +
+    ")), " +
+    "tw as (select * from twitter_users where uid in (" +
+    uidString +
+    ")), " +
+    "foo as (select *, coalesce(fb.uid, tw.uid) as foouid from fb full outer join tw on tw.uid = fb.uid) " +
+    "select *, coalesce(foo.foouid, x.uid) as uid from foo full outer join x on x.uid = foo.foouid;",
     [zid]
   );
 }
@@ -370,12 +400,12 @@ function getXidRecordByXidOwnerId(
           var shouldCreateXidEntryPromise = !zid_optional
             ? Promise.resolve(true)
             : Conversation.getConversationInfo(zid_optional).then(
-                (conv: { use_xid_whitelist: any }) => {
-                  return conv.use_xid_whitelist
-                    ? Conversation.isXidWhitelisted(owner, xid)
-                    : Promise.resolve(true);
-                }
-              );
+              (conv: { use_xid_whitelist: any }) => {
+                return conv.use_xid_whitelist
+                  ? Conversation.isXidWhitelisted(owner, xid)
+                  : Promise.resolve(true);
+              }
+            );
 
           return shouldCreateXidEntryPromise.then((should: any) => {
             if (!should) {
@@ -441,6 +471,7 @@ export {
   getPid,
   getPidPromise,
   getPidForParticipant,
+  updateTutorialDoneByEmail,
   getSocialInfoForUsers,
   updateTutorialDoneByEmail,
 };
@@ -456,6 +487,7 @@ export default {
   getPid,
   getPidPromise,
   getPidForParticipant,
+  updateTutorialDoneByEmail,
   getSocialInfoForUsers,
   updateTutorialDoneByEmail,
 };

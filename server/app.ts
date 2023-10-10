@@ -49,6 +49,7 @@ helpersInitialized.then(
       fetchIndexForReportPage,
       fetchIndexWithoutPreloadData,
       getPidForParticipant,
+      updateTutorialDoneByEmail,
       haltOnTimeout,
       HMAC_SIGNATURE_PARAM_NAME,
       hostname,
@@ -285,6 +286,32 @@ helpersInitialized.then(
       want("math_tick", getInt, assignToP, -1),
       handle_GET_math_correlationMatrix
     );
+
+
+    app.post(
+      "/api/v3/updateTutorialDoneByEmail",
+      moveToBody, // Using this as it seems to be a common middleware in your app
+      auth(assignToP), // Authentication middleware as assumed you would want to protect this route
+      updateTutorialDoneByEmail
+    );
+    // app.post("/api/v3/updateTutorialDoneByEmail", async (req, res) => {
+    //   console.log("Hello World")
+    //   try {
+    //     console.log("Request body:", req.body);  // Log the request body to see what is being sent
+    //     // If you have middleware functions, ensure they are not causing the issue
+    //     // For example, if moveToBody or auth(assignToP) are middleware functions,
+    //     // console.log their output or behavior
+    
+    //     // Call your function and ensure it’s working correctly
+    //     const result = await updateTutorialDoneByEmail(req.body.email);  // assuming email is sent in the body
+    //     console.log("Function result:", result);  // Log the result of your function
+    //     res.status(200).send(result);  // Send the result back as the response
+    //   } catch (error) {
+    //     console.error("Server Error:", error);  // Log any server error
+    //     res.status(500).send("Internal Server Error");  // Respond with a 500 status code
+    //   }
+    // });
+    
 
     app.get(
       "/api/v3/dataExport",

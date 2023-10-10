@@ -82,6 +82,7 @@ const Deliberation = (props = {}) => {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <ProgressBar progress={progress} fillerStyles={fillerStyles}></ProgressBar>
         {(currentTutorialIndex === 3 || currentTutorialIndex === 6 || currentTutorialIndex === 10) && <Button onClick={handleNextClick} sx={{ marginLeft: '10px' }}>Next</Button>}
+        <button onClick={() => {console.log(props)}}>Test</button>
       </div>
     </Box>
   );
