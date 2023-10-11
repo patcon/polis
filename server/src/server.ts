@@ -2438,15 +2438,35 @@ function initializePolisHelpers() {
   }
   
   function updateUserTutorialProgress(uid: any) {
+    // First, fetch the current tutorialprogress value
     return pgQueryP(
-      "update users set tutorialprogress = 1 where uid = $1",
+      "SELECT tutorialprogress FROM users WHERE uid = $1",
       [uid]
     )
+    .then((result: any) => {
+      if (result && result.length > 0) {
+        const currentProgress = result[0].tutorialprogress;
+        const newProgress = currentProgress + 1;
+
+        // Now, update the tutorialprogress with the incremented value
+        return pgQueryP(
+          "UPDATE users SET tutorialprogress = $1 WHERE uid = $2",
+          [newProgress, uid]
+        );
+      } else {
+        throw new Error('User not found');
+      }
+    })
     .then((updateResult: any) => {
       console.log('User updated successfully:', updateResult);
       return updateResult;
+    })
+    .catch((error: any) => {
+      console.error('Error updating user tutorial progress:', error);
+      throw error;
     });
 }
+
 
 
 
