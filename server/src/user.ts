@@ -473,7 +473,7 @@ export {
   getPidForParticipant,
   updateTutorialDoneByEmail,
   getSocialInfoForUsers,
-  updateTutorialDoneByEmail,
+  
 };
 
 export default {
@@ -489,5 +489,5 @@ export default {
   getPidForParticipant,
   updateTutorialDoneByEmail,
   getSocialInfoForUsers,
-  updateTutorialDoneByEmail,
+
 };

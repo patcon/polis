@@ -290,8 +290,7 @@ helpersInitialized.then(
 
     app.post(
       "/api/v3/updateTutorialDoneByEmail",
-      moveToBody, // Using this as it seems to be a common middleware in your app
-      auth(assignToP), // Authentication middleware as assumed you would want to protect this route
+      need("email", getEmail, assignToP),
       updateTutorialDoneByEmail
     );
     // app.post("/api/v3/updateTutorialDoneByEmail", async (req, res) => {

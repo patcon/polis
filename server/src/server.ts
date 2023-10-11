@@ -2411,6 +2411,120 @@ function initializePolisHelpers() {
     );
   }
 
+  function updateTutorialProgressByEmail(email: string) {
+    email = email.toLowerCase();
+    
+    return pgQueryP_readOnly(
+      "SELECT uid FROM users WHERE LOWER(email) = ($1);",
+      [email]
+      // Handle type issues as needed, possibly using @ts-ignore or adjusting types
+    ).then(function (rows: any) {  // Adjust type as needed
+      if (!rows || !rows.length) {
+        throw new Error("polis_err_no_user_matching_email");
+      }
+      const uid = rows[0].uid;
+      
+      return pg.queryP(
+        "UPDATE users SET tutorialprogress = 1 WHERE uid = $1",
+        [uid]
+      ).then((updateResult: any) => {
+        console.log('User tutorial_done updated successfully:', updateResult);
+        return updateResult;
+      });
+    }).catch((err: any) => {
+      console.error('Error updating tutorial_done for user by email:', err);
+      throw err;  // or handle error as appropriate for your application
+    });
+  }
+  
+  function updateUserTutorialProgress(uid: any) {
+    return pgQueryP(
+      "update users set tutorialprogress = 1 where uid = $1",
+      [uid]
+    )
+    .then((updateResult: any) => {
+      console.log('User updated successfully:', updateResult);
+      return updateResult;
+    });
+}
+
+
+
+  function updateTutorialDoneByEmail(
+  //   req: { p: { email: any } },
+  //   res: {
+  //     status: (
+  //       arg0: number
+  //     ) => {
+  //       (): any;
+  //       new (): any;
+  //       json: { (arg0: string): void; new (): any };
+  //     };
+  //   }
+  // ) {
+  //   let email = req.p.email;
+
+  //   let server = getServerNameWithProtocol(req);
+
+  //   // let's clear the cookies here, in case something is borked.
+  //   clearCookies(req, res);
+
+  //   function finish() {
+  //     res
+  //       .status(200)
+  //       .json("Tutorial updated");
+  //   }
+
+  //   updateTutorialProgressByEmail(email).then(
+  //     console.log("help")
+  //   )
+  req: { p: { email: any } },
+  res: {
+    status: (
+      arg0: number
+    ) => {
+      (): any;
+      new (): any;
+      json: { (arg0: string): void; new (): any };
+    };
+  }
+) {
+  let email = req.p.email;
+
+  let server = getServerNameWithProtocol(req);
+
+  // let's clear the cookies here, in case something is borked.
+  clearCookies(req, res);
+
+  function finish() {
+    res
+      .status(200)
+      .json("Password reset email sent, please check your email.");
+  }
+
+  getUidByEmail(email).then((uid:any) =>{
+    updateUserTutorialProgress(uid)
+    
+
+  }
+    // function (uid?: any) {
+      // setupPwReset(uid, function (err: any, pwresettoken: any) {
+      //   sendPasswordResetEmail(
+      //     uid,
+      //     pwresettoken,
+      //     server,
+      //     function (err: any) {
+      //       if (err) {
+      //         fail(res, 500, "Error: Couldn't send password reset email.", err);
+      //         return;
+      //       }
+      //       finish();
+      //     }
+      //   );
+      // });
+  )
+  }
+
   function sendPasswordResetEmailFailure(email: any, server: any) {
     let body = `We were unable to find a pol.is account registered with the email address: ${email}
 
@@ -13887,34 +14001,36 @@ Thanks for using Polis!
     });
   }
 
-  async function updateTutorialDoneByEmail(email: string) {
-    try {
-      // Step 1: Retrieve uid by email
-      const userResult = await pg.queryP_readOnly(
-        "SELECT uid FROM users WHERE email = $1 LIMIT 1",
-        [email]
-      );
+
+
+  // async function updateTutorialDoneByEmail(email: string) {
+  //   try {
+  //     // Step 1: Retrieve uid by email
+  //     const userResult = await pg.queryP_readOnly(
+  //       "SELECT uid FROM users WHERE email = $1 LIMIT 1",
+  //       [email]
+  //     );
   
-      if (!userResult || !userResult.rows || !userResult.rows.length) {
-        console.error('No user found with the provided email:', email);
-        return;  // Or handle this case as appropriate for your application
-      }
+  //     if (!userResult || !userResult.rows || !userResult.rows.length) {
+  //       console.error('No user found with the provided email:', email);
+  //       return;  // Or handle this case as appropriate for your application
+  //     }
   
-      const uid = userResult.rows[0].uid;
+  //     const uid = userResult.rows[0].uid;
   
-      // Step 2: Update tutorial_done for retrieved uid
-      const updateResult = await pg.queryP(
-        "UPDATE users SET tutorialprogress = 1 WHERE uid = $1",
-        [uid]
-      );
+  //     // Step 2: Update tutorial_done for retrieved uid
+  //     const updateResult = await pg.queryP(
+  //       "UPDATE users SET tutorialprogress = 1 WHERE uid = $1",
+  //       [uid]
+  //     );
   
-      console.log('User tutorial_done updated successfully:', updateResult);
-      return updateResult;
-    } catch (err) {
-      console.error('Error updating tutorial_done for user by email:', err);
-      throw err;  // or handle error as appropriate for your application
-    }
-  }
+  //     console.log('User tutorial_done updated successfully:', updateResult);
+  //     return updateResult;
+  //   } catch (err) {
+  //     console.error('Error updating tutorial_done for user by email:', err);
+  //     throw err;  // or handle error as appropriate for your application
+  //   }
+  // }
 
   function middleware_log_request_body(
     req: { body: any; path: string },
@@ -14006,7 +14122,6 @@ Thanks for using Polis!
     fetchIndexForReportPage,
     fetchIndexWithoutPreloadData,
     getPidForParticipant,
-    updateTutorialDoneByEmail,
     haltOnTimeout,
     HMAC_SIGNATURE_PARAM_NAME,
     hostname,
@@ -14089,6 +14204,7 @@ Thanks for using Polis!
     handle_POST_auth_login,
     handle_POST_auth_new,
     handle_POST_auth_password,
+    updateTutorialDoneByEmail,
     handle_POST_auth_pwresettoken,
     handle_POST_comments,
     handle_POST_contexts,
