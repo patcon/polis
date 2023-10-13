@@ -22,6 +22,13 @@ const Deliberation = (props = {}) => {
       setProgress(progress + 25);
     }
   };
+  const handleBackClick = () => {
+    setCurrentTutorialIndex(currentTutorialIndex-1)
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+      setProgress(progress - 25);
+    }
+  };
 
   const testProps = {
     match: {
@@ -80,6 +87,7 @@ const Deliberation = (props = {}) => {
       {currentIndex === 3 && isConversationExists && <ConversationUI response={testProps} />}
       {(!props.finishedTutorial && currentTutorialIndex != 3 && currentTutorialIndex != 6 && currentTutorialIndex != 10)&& <Tutorial setCurrentIndex={setCurrentTutorialIndex} currentIndex={currentTutorialIndex} email={props} />}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        {(currentTutorialIndex > 3) && <Button onClick={handleBackClick} sx={{ marginLeft: '10px' }}>Back</Button>}
         <ProgressBar progress={progress} fillerStyles={fillerStyles}></ProgressBar>
         {(currentTutorialIndex === 3 || currentTutorialIndex === 6 || currentTutorialIndex === 10) && <Button onClick={handleNextClick} sx={{ marginLeft: '10px' }}>Next</Button>}
         <button onClick={() => {console.log(props)}}>Test</button>
