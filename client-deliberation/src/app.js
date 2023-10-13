@@ -60,6 +60,27 @@ const PrivateRoute = ({ component: Component, isLoading, authed, ...rest }) => {
   )
 }
 
+const PrivateRouteStart = ({ children, isLoading, authed, ...rest }) => {
+  if (isLoading) {
+    return null;
+  }
+  return (
+    <Route
+      {...rest}
+      render={(props) =>
+        authed === true ? (
+          React.cloneElement(children, props)
+        ) : (
+          <Redirect
+            to={{ pathname: '/signin', state: { from: props.location } }}
+          />
+        )
+      }
+    />
+  );
+};
+
+
 PrivateRoute.propTypes = {
   component: PropTypes.element,
   isLoading: PropTypes.bool,
@@ -271,14 +292,9 @@ class App extends React.Component {
 
           <Route exact path="/404" render={() => <DoesNotExist title={"Page not found"} />} />
           <RouteOrRedirect path="/c/:conversation_id" isLoading={this.isLoading()} isAuthed={this.isAuthed()}/>
-
-          <PrivateRoute
-            isLoading={this.isLoading()}
-            authed={this.isAuthed()}
-            exact
-            path="/" 
-            component={IndividualDeliberation}
-            />
+          <PrivateRouteStart isLoading={this.isLoading()} authed={this.isAuthed()} exact path="/">
+            <Deliberation {...this.props.user} />
+          </PrivateRouteStart>
 
           <Route
             exact
