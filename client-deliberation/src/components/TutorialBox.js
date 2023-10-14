@@ -12,23 +12,24 @@ const TutorialBox = ({ heading, description, currentIndex, setCurrentIndex, onHi
   // Check if description is an array, if not, use the provided description
   const descArray = Array.isArray(description) ? description : [description];
 
-    // Handle the right arrow click
+  const [index, setindex] = useState(0);
+
     const handleRightArrowClick = () => {
-      setCurrentIndex(currentIndex+1);
-      console.log(currentIndex)
+      if(index >= 3){
+        setindex(0)
+      }else{
+        setindex(index+1)
+      }
     };
   
-    // Handle the left arrow click
     const handleLeftArrowClick = () => {
-      setCurrentIndex(currentIndex-1);
-      console.log(currentIndex)
+      if(index != 0){
+        setindex(index-1)
+      }
     };
 
     const handleTutorialCompletion = (userEmail) => {
       setCurrentIndex(currentIndex+1)
-      console.log(currentIndex)
-      console.log("Test123")
-      console.log(userEmail)
       PolisNet.polisPost('/api/v3/updateTutorialDoneByEmail', { email: userEmail })
         .then(response => {
           console.log(response)
@@ -62,18 +63,19 @@ const TutorialBox = ({ heading, description, currentIndex, setCurrentIndex, onHi
             alignItems: 'initial',
             position: 'relative',
           }}>
-            {currentIndex > 0 &&
+            {index > 0 &&
             <ArrowIcon onClick={handleLeftArrowClick} style={{ position: 'absolute', bottom: '-10px', left: '0', cursor: 'pointer', transform: 'rotate(180deg)'}} />}
             <Box sx={{ marginRight: '10px', marginBottom: '30px'}}>
-                <div>{descArray[currentIndex]}</div> 
+                <div>{descArray[index]}</div> 
             </Box>
-            {currentIndex === descArray.length - 1 ? (  
+            {(index == 2) ? ( 
+              <div>
               <PolisButton onClick={() => {
                 console.log(email.email);
                 handleTutorialCompletion(email.email);
                 onHide(); 
               }}  buttonText={'Start'}></PolisButton>
-              // updateTutorialDoneByEmail
+              </div>
             ) : (
             <ArrowIcon onClick={handleRightArrowClick} style={{ position: 'absolute', bottom: '-10', right: '0', cursor: 'pointer' }} />)}
           </Box>

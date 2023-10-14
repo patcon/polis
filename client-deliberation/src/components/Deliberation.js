@@ -61,16 +61,6 @@ const Deliberation = (props = {}) => {
     },
   };
 
-  // useEffect(() => {
-  //   // Replace 'yourConversationId' with the actual conversation ID you want to check
-  //   isMatch('8hjyvcneet')
-  //     .then((status) => {
-  //       setResponseObject(status.response);
-  //       setIsConversationExists(status.wasSuccessful);
-  //     })
-  //     .catch((status) => setIsConversationExists(status.wasSuccessful));
-  // }, []); // Add dependencies if necessary
-
   const fillerStyles = {
     height: '100%',
     width: `${progress}%`,
@@ -78,6 +68,23 @@ const Deliberation = (props = {}) => {
     borderRadius: 'inherit',
     transition: 'width 1s ease-in-out'
   }
+  
+  const shouldShowNextButton = () => {
+    if (props.tutorialprogress > 0) {
+      if (currentIndex === 0 && props.tutorialprogress > 0) {
+        return true;
+      }
+      if (currentIndex === 1 && props.tutorialprogress > 1) {
+        return true;
+      }
+      if (currentIndex === 2 && props.tutorialprogress > 2) {
+        return true;
+      }
+ 
+    }
+    return false;
+  };
+  
 
   return (
     <Box sx={{ maxWidth: "768px", margin: "auto", py: "20px", px: "10px"}}>
@@ -85,12 +92,13 @@ const Deliberation = (props = {}) => {
       {currentIndex === 1 && <UnderstandAI {...props} />}
       {currentIndex === 2 &&  <Legal/>}
       {currentIndex === 3 && isConversationExists && <ConversationUI response={testProps} />}
-      {(!props.finishedTutorial && currentTutorialIndex != 3 && currentTutorialIndex != 6 && currentTutorialIndex != 10)&& <Tutorial setCurrentIndex={setCurrentTutorialIndex} currentIndex={currentTutorialIndex} email={props} />}
+      {!shouldShowNextButton()&& <Tutorial setCurrentIndex={setCurrentTutorialIndex} currentIndex={currentTutorialIndex} email={props} tutorialprogress={props.tutorialprogress} currentIndexpage={currentIndex} />}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        {(currentTutorialIndex > 3) && <Button onClick={handleBackClick} sx={{ marginLeft: '10px' }}>Back</Button>}
+        {currentIndex !== 0 && currentTutorialIndex !== 0 && (
+          <Button onClick={handleBackClick} sx={{ marginRight: '10px' }}>Back</Button>
+        )}
         <ProgressBar progress={progress} fillerStyles={fillerStyles}></ProgressBar>
-        {(currentTutorialIndex === 3 || currentTutorialIndex === 6 || currentTutorialIndex === 10) && <Button onClick={handleNextClick} sx={{ marginLeft: '10px' }}>Next</Button>}
-        <button onClick={() => {console.log(props)}}>Test</button>
+        {shouldShowNextButton() && <Button onClick={handleNextClick} sx={{ marginLeft: '10px' }}>Next</Button>}
       </div>
     </Box>
   );

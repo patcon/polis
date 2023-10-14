@@ -2,24 +2,42 @@ import React, {useState} from 'react';
 import TutorialBox from "./TutorialBox";
 
 
-const Tutorial = ({ setCurrentIndex, currentIndex, email = {} }) => {
+const Tutorial = ({ setCurrentIndex, currentIndex, email = {} , tutorialprogress = 0, currentIndexpage}) => {
 
   const [showTutorial, setShowTutorial] = useState(true);
 
-  const heading = currentIndex > 3 ? currentIndex > 6 ? "Legal AI" : "Understand AI" : "Welcome to Polis";
-  const description = [
+  const descriptions = [
+    [
       'My name is Charlie and I am here to help you train your AI with the right attributes.',
       'If you want to learn more about AI, this highlighted YouTube Video will help you understand the topic. If you have any further questions, you can read the rest of the page.',
       'Now you can familiarize yourself with the basics of AI and afterward, you can start voting on your first poll.',
-      '',
+    ],
+    [
       "In this section I will help you to get a proper understanding of AI.",
       "AI, or Artificial Intelligence, is like a robot brain inside computers, phones, or even toys. This robot brain can think, learn, and solve problems, almost like how you do in school!",
       "If you are hooked now you can also read through the other sections. Happy Learning Wuff!",
+    ],
+    [
       'Of course there are also some legal points we always have to consider.',
       'This page provides you with all the information necessary for creating an AI, which is legal',
       'Always keep in mind if you are not sure about something you should always get advise form a laywer wuff'
-
+    ],
     ];
+
+    const description = descriptions[tutorialprogress] || []; // This selects the appropriate description set based on the tutorialprogress value.
+
+    const tutorialStages = [
+      "IndividualDeliberation",
+      "UnderstandAI",
+      "Legal"
+    ];
+    
+    const shouldShowTutorialForStage = (index) => {
+      return tutorialprogress <= index;
+    };
+
+    const heading = currentIndexpage > 0 ? currentIndexpage > 1 ? "Legal AI" : "Understand AI" : "Welcome to Polis";
+
 
     const styles = { 
         cls1: {
@@ -69,6 +87,16 @@ const Tutorial = ({ setCurrentIndex, currentIndex, email = {} }) => {
         setShowTutorial(true);
         setCurrentIndex(0);
       };
+      let shouldRenderTutorial = true;
+  
+      if (currentIndex === 0 && !shouldShowTutorialForStage(0)) {
+        shouldRenderTutorial = false;
+      } else if (currentIndex > 3 && currentIndex <= 6 && !shouldShowTutorialForStage(1)) {
+        shouldRenderTutorial = false;
+      } else if (currentIndex > 6 && !shouldShowTutorialForStage(2)) {
+        shouldRenderTutorial = false;
+      }
+
   return (
     <div>
 
@@ -89,9 +117,16 @@ const Tutorial = ({ setCurrentIndex, currentIndex, email = {} }) => {
   <path style={styles.cls7} d="M70.55,77a21.91,21.91,0,0,1-9.06,5.9,24.25,24.25,0,0,1-8.88-5.77c-1.53-1.66-2.17-2.29-1.94-4.56a6.58,6.58,0,0,1,2.1-4.32c3.83-3.51,13.12-3.58,17.09-.21a6.51,6.51,0,0,1,2.24,4c.42,2.38,0,3.21-1.55,5Z"/>
 </svg>
     </div>
-    {showTutorial && 
-    <TutorialBox heading={heading} description={description} currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} onHide={() => setShowTutorial(false)} email={email}></TutorialBox>
-  }
+    {showTutorial && shouldRenderTutorial && 
+        <TutorialBox 
+          heading={heading} 
+          description={description} 
+          currentIndex={currentIndex} 
+          setCurrentIndex={setCurrentIndex} 
+          onHide={() => setShowTutorial(false)} 
+          email={email}
+        />
+      }
     </div>
     
   );
