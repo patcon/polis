@@ -9,11 +9,22 @@ import Legal from "./Legal";
 
 const Deliberation = (props = {}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [progress, setProgress] = useState(33.3);
+  const [progress, setProgress] = useState(25);
   const [currentTutorialIndex, setCurrentTutorialIndex] = useState(0);
+  const [nextButtonState, setnextButtonState] = useState(false);
   const [isConversationExists, setIsConversationExists] = useState(null);
   // const [responseObject, setResponseObject] = useState({});
 
+
+  useEffect(() => {
+    let currentstate = currentTutorialIndex - props.tutorialprogress;
+    console.log("current state",currentstate)
+    if (currentstate === 1) {
+      setnextButtonState(true);
+      console.log("nextbtn", nextButtonState)
+    }
+  }, [currentTutorialIndex, props.tutorialprogress]); 
+  
 
   const handleNextClick = () => {
     setCurrentTutorialIndex(currentTutorialIndex+1)
@@ -80,10 +91,14 @@ const Deliberation = (props = {}) => {
       if (currentIndex === 2 && props.tutorialprogress > 2) {
         return true;
       }
+
  
     }
+
     return false;
   };
+
+  const shouldRenderTutorial = (nextButtonState || !shouldShowNextButton()) && !(nextButtonState && !shouldShowNextButton());
   
 
   return (
@@ -91,14 +106,14 @@ const Deliberation = (props = {}) => {
       {currentIndex === 0 && <IndividualDeliberation {...props} currentIndex={currentIndex} />}
       {currentIndex === 1 && <UnderstandAI {...props} />}
       {currentIndex === 2 &&  <Legal/>}
-      {currentIndex === 3 && isConversationExists && <ConversationUI response={testProps} />}
-      {!shouldShowNextButton()&& <Tutorial setCurrentIndex={setCurrentTutorialIndex} currentIndex={currentTutorialIndex} email={props} tutorialprogress={props.tutorialprogress} currentIndexpage={currentIndex} />}
+      {currentIndex === 3 && isConversationExists && <ConversationUI {...props} response={responseObject} />}
+      {shouldRenderTutorial&& <Tutorial setCurrentIndex={setCurrentTutorialIndex} currentIndex={currentTutorialIndex} email={props} tutorialprogress={props.tutorialprogress} currentIndexpage={currentIndex} setnextButtonState={setnextButtonState}/>}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {currentIndex !== 0 && currentTutorialIndex !== 0 && (
           <Button onClick={handleBackClick} sx={{ marginRight: '10px' }}>Back</Button>
         )}
         <ProgressBar progress={progress} fillerStyles={fillerStyles}></ProgressBar>
-        {shouldShowNextButton() && <Button onClick={handleNextClick} sx={{ marginLeft: '10px' }}>Next</Button>}
+        {!shouldRenderTutorial && <Button onClick={handleNextClick} sx={{ marginLeft: '10px' }}>Next</Button>}
       </div>
     </Box>
   );

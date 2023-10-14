@@ -17,6 +17,8 @@ const ConversationUI = (props) => {
   const [isSubscribed, setIsSubscribed] = useState(props.response.ptpt?.subscribed ?? false)
   const [emailInputValue, setEmailInputValue] = useState("")
 
+  console.log("route props", props)
+
   const vote = (params) => {
     PolisNet.polisPost(
       "/api/v3/votes",

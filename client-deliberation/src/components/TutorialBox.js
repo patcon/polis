@@ -7,15 +7,14 @@ import PolisNet from "../util/net";
 
 
 
-const TutorialBox = ({ heading, description, currentIndex, setCurrentIndex, onHide, email = {}  }) => {
+const TutorialBox = ({ heading, description, currentIndex, setCurrentIndex, onHide, email = {}, setnextButtonstate  }) => {
 
-  // Check if description is an array, if not, use the provided description
   const descArray = Array.isArray(description) ? description : [description];
 
   const [index, setindex] = useState(0);
 
     const handleRightArrowClick = () => {
-      if(index >= 3){
+      if(index >= 2){
         setindex(0)
       }else{
         setindex(index+1)
@@ -29,6 +28,8 @@ const TutorialBox = ({ heading, description, currentIndex, setCurrentIndex, onHi
     };
 
     const handleTutorialCompletion = (userEmail) => {
+      setnextButtonstate(1)
+      console.log("buttonstate set")
       setCurrentIndex(currentIndex+1)
       PolisNet.polisPost('/api/v3/updateTutorialDoneByEmail', { email: userEmail })
         .then(response => {
@@ -78,6 +79,7 @@ const TutorialBox = ({ heading, description, currentIndex, setCurrentIndex, onHi
               </div>
             ) : (
             <ArrowIcon onClick={handleRightArrowClick} style={{ position: 'absolute', bottom: '-10', right: '0', cursor: 'pointer' }} />)}
+        
           </Box>
       </Box>
   );

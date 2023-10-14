@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import TutorialBox from "./TutorialBox";
 
 
-const Tutorial = ({ setCurrentIndex, currentIndex, email = {} , tutorialprogress = 0, currentIndexpage}) => {
+const Tutorial = ({ setCurrentIndex, currentIndex, email = {} , tutorialprogress = 0, currentIndexpage, setnextButtonState}) => {
 
   const [showTutorial, setShowTutorial] = useState(true);
 
@@ -125,6 +125,7 @@ const Tutorial = ({ setCurrentIndex, currentIndex, email = {} , tutorialprogress
           setCurrentIndex={setCurrentIndex} 
           onHide={() => setShowTutorial(false)} 
           email={email}
+          setnextButtonstate={setnextButtonState}
         />
       }
     </div>
