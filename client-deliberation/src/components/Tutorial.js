@@ -22,6 +22,11 @@ const Tutorial = ({ setCurrentIndex, currentIndex, email = {} , tutorialprogress
       'This page provides you with all the information necessary for creating an AI, which is legal',
       'Always keep in mind if you are not sure about something you should always get advise form a laywer wuff'
     ],
+    [
+      'Now I will give you a short introduction into the poll page. Wufff :)',
+      'First you respond to a statement in the middle of the page',
+      'Secondly the poll shows you that xzy is the case.'
+    ],
     ];
 
     const description = descriptions[tutorialprogress] || []; // This selects the appropriate description set based on the tutorialprogress value.
