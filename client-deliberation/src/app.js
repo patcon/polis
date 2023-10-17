@@ -39,6 +39,7 @@ import UnderstandAI from './components/UnderstandAI'
 import Legal from './components/Legal'
 import Visualization from './components/Visualization'
 import Deliberation from './components/Deliberation'
+import PollTutorial from './components/PollTutorial'
 
 const PrivateRoute = ({ component: Component, isLoading, authed, ...rest }) => {
   if (isLoading) {
@@ -129,7 +130,9 @@ const RouteOrRedirect = (props) => {
           render={(routeProps) =>
             props.isAuthed ? (
               <div>
-              <ConversationUI {...routeProps} response={responseObject} />
+               <PollTutorial {...routeProps} response={responseObject} />
+              {/* <ConversationUI {...routeProps} response={responseObject} /> */}
+              <button onClick={() => {console.log("routeprops", routeProps, "response obj", responseObject)}}>auth</button> 
               </div>
 
             ) : (
