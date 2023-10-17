@@ -81,6 +81,7 @@ const PrivateRouteStart = ({ children, isLoading, authed, ...rest }) => {
 };
 
 
+
 PrivateRoute.propTypes = {
   component: PropTypes.element,
   isLoading: PropTypes.bool,
@@ -120,15 +121,17 @@ const RouteOrRedirect = (props) => {
   if (isConversationExists === null || props.isLoading) {
     return <Loading />;
   }
-
   return (
     <div>
       {isConversationExists ? (
         <Route
           path={props.path}
           render={(routeProps) =>
-            true === true ? (
-              <ConversationUI {...routeProps} response={responseObject}/>
+            props.isAuthed ? (
+              <div>
+              <ConversationUI {...routeProps} response={responseObject} />
+              </div>
+
             ) : (
               <Redirect
                 to={{ pathname: '/signin', state: { from: props.location } }}
@@ -162,7 +165,7 @@ class App extends React.Component {
 
   componentWillMount() {
     this.loadUserData()
-     // Jake - the below line somehow affects when the visualizations show up
+    // Jake - the below line somehow affects when the visualizations show up
     const mql = window.matchMedia(`(min-width: 800px)`)
     mql.addListener(this.mediaQueryChanged.bind(this))
     this.setState({ mql: mql, docked: mql.matches })
@@ -275,13 +278,13 @@ class App extends React.Component {
           <Route
             exact
             path="/understandAI"
-            render={() => <UnderstandAI/>}
+            render={() => <UnderstandAI />}
           />
 
           <Route
             exact
             path="/legal"
-            render={() => <Legal/>}
+            render={() => <Legal />}
           />
 
           <Route
@@ -291,14 +294,14 @@ class App extends React.Component {
           />
 
           <Route exact path="/404" render={() => <DoesNotExist title={"Page not found"} />} />
-          <RouteOrRedirect path="/c/:conversation_id" isLoading={this.isLoading()} isAuthed={this.isAuthed()}/>
+          <RouteOrRedirect path="/c/:conversation_id" isLoading={this.isLoading()} isAuthed={this.isAuthed()} />
           <PrivateRouteStart isLoading={this.isLoading()} authed={this.isAuthed()} exact path="/">
             <Deliberation {...this.props.user} />
           </PrivateRouteStart>
 
           <Route
             exact
-            path={["/","/conversations","/integrate", "/account"]}
+            path={["/", "/conversations", "/integrate", "/account"]}
             render={(routeProps) => {
               if (routeProps.location.pathname.split('/')[1] === 'm') {
                 return null
@@ -373,7 +376,7 @@ class App extends React.Component {
           />
 
           {/* <Route path="*" render={() => <DoesNotExist title={"Page not found"} />} /> */}
-          <Route exact path="/individualdeliberation" component={IndividualDeliberation}/>
+          <Route exact path="/individualdeliberation" component={IndividualDeliberation} />
           <Redirect to="/404" />
         </Switch>
       </>
