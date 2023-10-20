@@ -131,8 +131,6 @@ const RouteOrRedirect = (props) => {
             props.isAuthed ? (
               <div>
                <PollTutorial {...routeProps} response={responseObject} />
-              {/* <ConversationUI {...routeProps} response={responseObject} /> */}
-              <button onClick={() => {console.log("routeprops", routeProps, "response obj", responseObject)}}>auth</button> 
               </div>
 
             ) : (

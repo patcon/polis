@@ -15,31 +15,23 @@ const PollTutorial = ({ response, ...routeProps }) => {
   const [highest_state_index, sethighest_state_index] = useState(0); //var needed so when you go back the tutorial doesn't start over
 
   // const [responseObject, setResponseObject] = useState({});
-  const tutorial_length_of_pages = [3, 6, 9, 14];
+  const tutorial_length_of_pages = [3, 7, 11, 16];
 
   useEffect(() => {
-    if (response.user.tutorialprogress > 0 && response.user.tutorialprogress <4) {
-      const newIndex = tutorial_length_of_pages[response.user.tutorialprogress - 1];
+    const tut_prog = response.user.tutorialprogress
+    if (tut_prog > 0 && tut_prog <4) {
+      const newIndex = tutorial_length_of_pages[tut_prog - 1];
       setcurrent_state_index(newIndex+1);
       sethighest_state_index(newIndex+1)
+      setProgress(progress + tut_prog*25)
     }
   }, []);
 
 
-  // const handleNextClick = () => {
-  //   setCurrentTutorialIndex(currentTutorialIndex+1)
-  //   if (currentIndex < 3) {
-  //     setCurrentIndex(currentIndex + 1);
-  //     setProgress(progress + 25);
-  //   }
-  // };
-  // const handleBackClick = () => {
-  //   setCurrentTutorialIndex(currentTutorialIndex-1)
-  //   if (currentIndex > 0) {
-  //     setCurrentIndex(currentIndex - 1);
-  //     setProgress(progress - 25);
-  //   }
-  // };
+  const handleNextClick = () => {
+    setcurrent_state_index(current_state_index+1)
+    setProgress(progress + 25);
+  };
 
 
 
@@ -55,44 +47,47 @@ const PollTutorial = ({ response, ...routeProps }) => {
 
   let componentToRender;
   let heading;
+  let show_progress = (response.user.tutorialprogress < 4 && !(current_state_index > tutorial_length_of_pages[tutorial_length_of_pages.length -1])) || (!(response.user.tutorialprogress < 4) && current_state_index > tutorial_length_of_pages[tutorial_length_of_pages.length -1])
+  const isAtTutorialPageEnd = tutorial_length_of_pages.map(value => value).includes(current_state_index);
 
-  if (current_state_index <= tutorial_length_of_pages[0]) {
+
+  if(response.user.tutorialprogress > 3 || current_state_index > tutorial_length_of_pages[tutorial_length_of_pages.length -1 ]){
+    componentToRender = <ConversationUI {...routeProps} response={response} />;
+  } else if (current_state_index <= tutorial_length_of_pages[0]) {
     componentToRender = <IndividualDeliberation {...response.user} currentIndex={currentIndex} />;
     heading = "Individual Deliberation"
-  } else if (current_state_index > tutorial_length_of_pages[0] && currentIndex <= tutorial_length_of_pages[1]) {
+  } else if (current_state_index > tutorial_length_of_pages[0] && current_state_index <= tutorial_length_of_pages[1]) {
       componentToRender = <UnderstandAI {...response.users} />;
       heading = "UnderstandAI"
-  } else if (current_state_index > tutorial_length_of_pages[1] && currentIndex <= tutorial_length_of_pages[2]) {
+  } else if (current_state_index > tutorial_length_of_pages[1] && current_state_index <= tutorial_length_of_pages[2]) {
       componentToRender = <Legal />;
       heading = "Legal"
-  } else if (current_state_index > tutorial_length_of_pages[2] && currentIndex <= tutorial_length_of_pages[3]) {
+  } else if (current_state_index > tutorial_length_of_pages[2] && current_state_index <= tutorial_length_of_pages[3]) {
       componentToRender = <ConversationUI {...Routeprops_tut} response={ResponseObject} />;
       heading = "Poll"
-  }
-  const isAtTutorialPageEnd = tutorial_length_of_pages.map(value => value - 1).includes(current_state_index);
+  } 
+ 
 
 
   return (
     <Box sx={{ maxWidth: "768px", margin: "auto", py: "20px", px: "10px"}}>
       {componentToRender}
       <div>
-       {response.user.tutorialprogress >= 5 && <ConversationUI {...routeProps} response={response} />} {/* response.user.tutorialprogress >= 5 means he has already gone throught the tutorial. */}
-      {/* <button onClick={() => {console.log("props", {...routeProps}, "response obj", response, "currentindex", current_state_index)}}>auth inner</button>  */}
-      <button onClick={() => {console.log("props",current_state_index)}}>auth inner</button> 
-      {!isAtTutorialPageEnd && <Tutorials email={response.user} current_state_index={current_state_index} setcurrent_state_index={setCurrentIndex} heading={heading}/>}
-      {current_state_index <= tutorial_length_of_pages[tutorial_length_of_pages.length - 1] && (
-        <ProgressBar progress={progress} fillerStyles={fillerStyles}></ProgressBar>
-      )}
-      </div>
-      
-      {/* {shouldRenderTutorial&& <Tutorial setCurrentIndex={setCurrentTutorialIndex} currentIndex={currentTutorialIndex} email={props.response.user} tutorialprogress={props.response.user.tutorialprogress} currentIndexpage={currentIndex} setnextButtonState={setnextButtonState}/>}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        {currentIndex !== 0 && currentTutorialIndex !== 0 && (
-          <Button onClick={handleBackClick} sx={{ marginRight: '10px' }}>Back</Button>
+      {show_progress && (
+          <>
+            {!isAtTutorialPageEnd && <Tutorials email={response.user} current_state_index={current_state_index} setcurrent_state_index={setcurrent_state_index} heading={heading}/>}
+            <div>
+            {current_state_index <= tutorial_length_of_pages[tutorial_length_of_pages.length - 1] && (
+              <ProgressBar progress={progress} fillerStyles={fillerStyles}></ProgressBar>
+            )}
+            {isAtTutorialPageEnd && <Button onClick={handleNextClick} sx={{ marginLeft: '30px'}}>Next</Button>}
+            </div>
+            
+          </>
         )}
-        <ProgressBar progress={progress} fillerStyles={fillerStyles}></ProgressBar>
-        {!shouldRenderTutorial && <Button onClick={handleNextClick} sx={{ marginLeft: '10px' }}>Next</Button>} */}
-      {/* </div> */}
+
+      </div>
+
     </Box>
   );
 };

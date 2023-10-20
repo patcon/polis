@@ -7,6 +7,7 @@ const Tutorials = ({email = {}, current_state_index, setcurrent_state_index, hea
 //   const [showTutorial, setShowTutorial] = useState(true);
 
   const descriptions = [
+       
       'My name is Charlie and I am here to help you train your AI with the right attributes.',
       'If you want to learn more about AI, this highlighted YouTube Video will help you understand the topic. If you have any further questions, you can read the rest of the page.',
       'Now you can familiarize yourself with the basics of AI and afterward, you can start voting on your first poll.',
@@ -22,7 +23,8 @@ const Tutorials = ({email = {}, current_state_index, setcurrent_state_index, hea
       'Now I will give you a short introduction into the poll page. Wufff :)',
       'First you respond to a statement in the middle of the page',
       'Secondly the poll shows you that xzy is the case.',
-      '',
+      'Here you can share your perspective',
+      ''
     ];
 
 
