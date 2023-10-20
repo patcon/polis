@@ -4,15 +4,14 @@ import UnderstandAI from "./UnderstandAI";
 import IndividualDeliberation from "./IndividualDeliberation";
 import ProgressBar from "./Progressbar";
 import Tutorials from "./Tutorials";
+import ConversationUITutorial from "./ConversationUITutorial";
 import ConversationUI from "./ConversationUI";
 import Legal from "./Legal";
 import {ResponseObject, Routeprops_tut} from "./PollConsts";
 
 const PollTutorial = ({ response, ...routeProps }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(25);
   const [current_state_index, setcurrent_state_index] = useState(0);
-  const [highest_state_index, sethighest_state_index] = useState(0); //var needed so when you go back the tutorial doesn't start over
 
   // const [responseObject, setResponseObject] = useState({});
   const tutorial_length_of_pages = [3, 7, 11, 16];
@@ -22,7 +21,6 @@ const PollTutorial = ({ response, ...routeProps }) => {
     if (tut_prog > 0 && tut_prog <4) {
       const newIndex = tutorial_length_of_pages[tut_prog - 1];
       setcurrent_state_index(newIndex+1);
-      sethighest_state_index(newIndex+1)
       setProgress(progress + tut_prog*25)
     }
   }, []);
