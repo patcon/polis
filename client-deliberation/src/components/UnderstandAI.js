@@ -10,7 +10,16 @@ import IntegrateBox from "./IntegrateBox";
 import Tutorial from "./Tutorial";
 
 
-const UnderstandAI = () => {
+const UnderstandAI = (props) => {
+  const [zoom, setZoom] = useState(false);
+  useEffect(() => {
+    if (props.currentIndex === 5 && !zoom) {
+      setZoom(true); 
+      setTimeout(() => {
+        setZoom(false); 
+      }, 500);
+    }
+  }, [props.currentIndex]);
 
   const items = [
     "Quality of Data: If the data is accurate and diverse, the AI becomes more reliable and understands a broader range of information, just like using fresh and varied ingredients makes a tastier cake.",
@@ -24,7 +33,8 @@ const UnderstandAI = () => {
     display: 'flex',
     justifyContent: 'center',
     margin: '20px',
-    
+    transform: zoom ? 'scale(1.2)' : 'scale(1)',
+    transition: 'transform 0.5s',
   };
 
   return (

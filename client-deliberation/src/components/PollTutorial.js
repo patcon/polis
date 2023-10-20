@@ -54,13 +54,13 @@ const PollTutorial = ({ response, ...routeProps }) => {
   if(response.user.tutorialprogress > 3 || current_state_index > tutorial_length_of_pages[tutorial_length_of_pages.length -1 ]){
     componentToRender = <ConversationUI {...routeProps} response={response} />;
   } else if (current_state_index <= tutorial_length_of_pages[0]) {
-    componentToRender = <IndividualDeliberation {...response.user} currentIndex={currentIndex} />;
+    componentToRender = <IndividualDeliberation {...response.user} currentIndex={current_state_index} />;
     heading = "Individual Deliberation"
   } else if (current_state_index > tutorial_length_of_pages[0] && current_state_index <= tutorial_length_of_pages[1]) {
-      componentToRender = <UnderstandAI {...response.users} />;
+      componentToRender = <UnderstandAI {...response.users} currentIndex={current_state_index}/>;
       heading = "UnderstandAI"
   } else if (current_state_index > tutorial_length_of_pages[1] && current_state_index <= tutorial_length_of_pages[2]) {
-      componentToRender = <Legal />;
+      componentToRender = <Legal currentIndex={current_state_index} />;
       heading = "Legal"
   } else if (current_state_index > tutorial_length_of_pages[2] && current_state_index <= tutorial_length_of_pages[3]) {
       componentToRender = <ConversationUI {...Routeprops_tut} response={ResponseObject} />;

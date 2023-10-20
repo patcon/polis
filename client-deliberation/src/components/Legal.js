@@ -10,7 +10,16 @@ import IntegrateBox from "./IntegrateBox";
 import Tutorial from "./Tutorial";
 
 
-const Legal = () => {
+const Legal = (props) => {
+  const [zoom, setZoom] = useState(false);
+  useEffect(() => {
+    if (props.currentIndex === 9 && !zoom) {
+      setZoom(true); 
+      setTimeout(() => {
+        setZoom(false); 
+      }, 500);
+    }
+  }, [props.currentIndex]);
 
   const items = [
     "Keeps Your Information Private: AI often uses information from people to learn and work better. However, there are rules to make sure this information is kept secret and safe, so no one can use it in a way that harms or is unfair to others. This is like keeping your secrets safe!",
@@ -23,7 +32,8 @@ const Legal = () => {
     display: 'flex',
     justifyContent: 'center',
     margin: '20px',
-    
+    transform: zoom ? 'scale(1.2)' : 'scale(1)',
+    transition: 'transform 0.5s',
   };
 
   return (
