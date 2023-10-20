@@ -71,7 +71,7 @@ const TutorialsBox = ({ heading, description, email = {}, current_state_index, s
            
               </div>
             ) : (
-            <ArrowIcon onClick={handleRightArrowClick} style={{ position: 'absolute', bottom: '-10', right: '0', cursor: 'pointer' }} />)}
+                <ArrowIcon onClick={handleRightArrowClick} style={{ position: 'absolute', bottom: '-10px', right: '0', cursor: 'pointer' }} />)}
         
           </Box>
       </Box>

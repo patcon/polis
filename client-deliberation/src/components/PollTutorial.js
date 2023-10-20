@@ -61,7 +61,7 @@ const PollTutorial = ({ response, ...routeProps }) => {
       componentToRender = <Legal currentIndex={current_state_index} />;
       heading = "Legal"
   } else if (current_state_index > tutorial_length_of_pages[2] && current_state_index <= tutorial_length_of_pages[3]) {
-      componentToRender = <ConversationUI {...Routeprops_tut} response={ResponseObject} />;
+      componentToRender = <ConversationUITutorial {...Routeprops_tut} response={ResponseObject} currentIndex={current_state_index}/>;
       heading = "Poll"
   } 
  
