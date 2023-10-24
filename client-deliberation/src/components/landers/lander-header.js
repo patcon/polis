@@ -7,6 +7,8 @@ import Logomark from '../framework/logomark'
 
 class Header extends Component {
   render() {
+    const { path } = this.props;
+    console.log("ich bin hier im header", path)
     return (
       <Box>
         <Flex
@@ -27,9 +29,20 @@ class Header extends Component {
             </Link>
           </Box>
           <Box>
-            <Link sx={{ variant: 'links.nav' }} to={'/createuser'}>
-              Sign Up
-            </Link>
+          {path === '/' ? (
+              <Link sx={{ variant: 'links.nav' }} to={'/createuser'}>
+                Sign Up
+              </Link>
+            ) : (
+              <Link 
+              sx={{ variant: 'links.nav' }} 
+              to={{ 
+                  pathname: '/createuserPoll', 
+                  state: { pathFromHeader: path }
+              }}>
+                Sign Up
+              </Link>
+            )}
           </Box>
         </Flex>
       </Box>

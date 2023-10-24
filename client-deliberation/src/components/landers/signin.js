@@ -171,11 +171,12 @@ class SignIn extends React.Component {
     const { signInSuccessful, authed } = this.props
 
     if (signInSuccessful || authed) {
-      return <Redirect to={'/'}/>
+      return <Redirect to={'/'} />
     }
 
     return (
-      <StaticLayout>
+      
+      <StaticLayout path={this.props.location.state?.from?.pathname}>
         <Heading as="h1" sx={{ my: [4, null, 5], fontSize: [6, null, 7] }}>
           Sign In
         </Heading>
@@ -183,6 +184,7 @@ class SignIn extends React.Component {
           ? this.drawLoginForm()
           : this.drawPasswordConnectFacebookForm()}{' '}
       </StaticLayout>
+      
     )
   }
 }

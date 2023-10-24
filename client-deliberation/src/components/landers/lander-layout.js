@@ -4,7 +4,8 @@ import Header from './lander-header'
 import Footer from './lander-footer'
 import { Box } from 'theme-ui'
 
-const Layout = ({ children }) => {
+const Layout = ({ children, path }) => {
+  console.log("ich bin hier im Layout", path)
   const globalWidth = '45em'
   return (
     <Box
@@ -13,7 +14,7 @@ const Layout = ({ children }) => {
         maxWidth: globalWidth,
         padding: `0 1.0875rem 1.45rem`
       }}>
-      <Header globalWidth={globalWidth} />
+      <Header globalWidth={globalWidth} path={path}/>
       <Box>{children}</Box>
       <Footer />
     </Box>
@@ -21,7 +22,8 @@ const Layout = ({ children }) => {
 }
 
 Layout.propTypes = {
-  children: PropTypes.element
+  children: PropTypes.element,
+  path: PropTypes.string,
 }
 
 export default Layout

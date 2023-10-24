@@ -10,7 +10,7 @@ import Legal from "./Legal";
 import {ResponseObject, Routeprops_tut} from "./PollConsts";
 
 const PollTutorial = ({ response, ...routeProps }) => {
-  const [progress, setProgress] = useState(25);
+  const [progress, setProgress] = useState(0);
   const [current_state_index, setcurrent_state_index] = useState(0);
 
   // const [responseObject, setResponseObject] = useState({});

@@ -40,6 +40,8 @@ import Legal from './components/Legal'
 import Visualization from './components/Visualization'
 import Deliberation from './components/Deliberation'
 import PollTutorial from './components/PollTutorial'
+import Parameter from './components/Parameter'
+import CreateuserPoll from './components/landers/createuserPoll'
 
 const PrivateRoute = ({ component: Component, isLoading, authed, ...rest }) => {
   if (isLoading) {
@@ -109,7 +111,7 @@ const isMatch = (conv_id) => {
 const RouteOrRedirect = (props) => {
   const [isConversationExists, setIsConversationExists] = useState(null);
   const [responseObject, setResponseObject] = useState({});
-
+  console.log("das sind die Props die hier ankommen", props.location)
   useEffect(() => {
     isMatch(props.computedMatch.params.conversation_id)
       .then((status) => {
@@ -132,11 +134,11 @@ const RouteOrRedirect = (props) => {
               <div>
                <PollTutorial {...routeProps} response={responseObject} />
               </div>
-
+              // <ConversationUI {...routeProps} response={responseObject}/>
             ) : (
               <Redirect
-                to={{ pathname: '/signin', state: { from: props.location } }}
-              />
+                  to={{ pathname: '/signin', state: { from: props.location } }}
+                />
             )
           }
         />
@@ -256,10 +258,17 @@ class App extends React.Component {
             path="/signin/**/*"
             render={() => <SignIn {...this.props} authed={this.isAuthed()} />}
           />
+          <Route
+    exact
+    path="/createUserPoll"
+    render={(routeProps) => <CreateuserPoll {...routeProps} />}
+/>
           <Route exact path="/signout" component={SignOut} />
           <Route exact path="/signout/*" component={SignOut} />
           <Route exact path="/signout/**/*" component={SignOut} />
           <Route exact path="/createuser" component={CreateUser} />
+          
+
           <Route exact path="/createuser/*" component={CreateUser} />
           <Route exact path="/createuser/**/*" component={CreateUser} />
 
@@ -293,6 +302,12 @@ class App extends React.Component {
             path="/deliberation"
             render={() => <Deliberation {...this.props.user} />}
           />
+
+          <Route
+            exact
+            path="/parameter"
+            render={() => <Parameter {...this.props.user} />}
+          />    
 
           <Route exact path="/404" render={() => <DoesNotExist title={"Page not found"} />} />
           <RouteOrRedirect path="/c/:conversation_id" isLoading={this.isLoading()} isAuthed={this.isAuthed()} />
