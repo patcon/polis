@@ -112,7 +112,6 @@ const RouteOrRedirect = (props) => {
   const [isConversationExists, setIsConversationExists] = useState(null);
   const [showPoll, setshowPoll] = useState(false);
   const [responseObject, setResponseObject] = useState({});
-  console.log("das sind die Props die hier ankommen", props.location)
   useEffect(() => {
     isMatch(props.computedMatch.params.conversation_id)
       .then((status) => {

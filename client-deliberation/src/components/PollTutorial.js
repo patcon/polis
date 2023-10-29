@@ -9,11 +9,9 @@ import ConversationUI from "./ConversationUI";
 import Legal from "./Legal";
 import {ResponseObject, Routeprops_tut} from "./PollConsts";
 
-const PollTutorial = ({ response, setshowPoll ,...routeProps}) => {
+const PollTutorial = ({ response, setshowPoll}) => {
   const [progress, setProgress] = useState(0);
   const [current_state_index, setcurrent_state_index] = useState(0);
-
-  // const [responseObject, setResponseObject] = useState({});
   const tutorial_length_of_pages = [3, 7, 11, 16];
 
   useEffect(() => {

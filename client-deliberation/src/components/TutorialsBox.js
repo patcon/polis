@@ -26,7 +26,6 @@ const TutorialsBox = ({ heading, description, email = {}, current_state_index, s
       setcurrent_state_index(current_state_index+1)   
       PolisNet.polisPost('/api/v3/updateTutorialDoneByEmail', { email: userEmail })
         .then(response => {
-          console.log(response)
           if (response.success) {
             console.log('Tutorial updated successfully!', response.result);
           } else {

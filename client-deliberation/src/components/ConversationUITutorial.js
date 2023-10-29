@@ -23,7 +23,6 @@ const ConversationUITutorial = (props) => {
     if (!zoom) {
       setZoom(true); 
       setTimeout(() => {
-        console.log("es wurde gezoomt")
         setZoom(false); 
       }, 500);
     }
