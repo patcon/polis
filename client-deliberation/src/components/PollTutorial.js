@@ -9,7 +9,7 @@ import ConversationUI from "./ConversationUI";
 import Legal from "./Legal";
 import {ResponseObject, Routeprops_tut} from "./PollConsts";
 
-const PollTutorial = ({ response, ...routeProps }) => {
+const PollTutorial = ({ response, setshowPoll ,...routeProps}) => {
   const [progress, setProgress] = useState(0);
   const [current_state_index, setcurrent_state_index] = useState(0);
 
@@ -50,7 +50,7 @@ const PollTutorial = ({ response, ...routeProps }) => {
 
 
   if(response.user.tutorialprogress > 3 || current_state_index > tutorial_length_of_pages[tutorial_length_of_pages.length -1 ]){
-    componentToRender = <ConversationUI {...routeProps} response={response} />;
+    setshowPoll(true)
   } else if (current_state_index <= tutorial_length_of_pages[0]) {
     componentToRender = <IndividualDeliberation {...response.user} currentIndex={current_state_index} />;
     heading = "Individual Deliberation"

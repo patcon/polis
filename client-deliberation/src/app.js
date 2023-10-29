@@ -110,6 +110,7 @@ const isMatch = (conv_id) => {
 
 const RouteOrRedirect = (props) => {
   const [isConversationExists, setIsConversationExists] = useState(null);
+  const [showPoll, setshowPoll] = useState(false);
   const [responseObject, setResponseObject] = useState({});
   console.log("das sind die Props die hier ankommen", props.location)
   useEffect(() => {
@@ -121,20 +122,29 @@ const RouteOrRedirect = (props) => {
       .catch((status) => setIsConversationExists(status.wasSuccessful));
   }, [props.computedMatch.params.conversation_id]);
 
+  useEffect(() => {
+    if(responseObject.user && responseObject.user.tutorialprogress >= 4){
+      setshowPoll(true)
+    }
+  }, [responseObject]);
+  
+
   if (isConversationExists === null || props.isLoading) {
     return <Loading />;
   }
+  
   return (
     <div>
       {isConversationExists ? (
         <Route
           path={props.path}
           render={(routeProps) =>
-            props.isAuthed ? (
-              <div>
-               <PollTutorial {...routeProps} response={responseObject} />
-              </div>
-              // <ConversationUI {...routeProps} response={responseObject}/>
+            props.isAuthed ? ( showPoll ? 
+              (<ConversationUI {...routeProps} response={responseObject}/>) 
+            :
+             (<div>
+               <PollTutorial response={responseObject}  setshowPoll={setshowPoll}/>
+              </div>)
             ) : (
               <Redirect
                   to={{ pathname: '/signin', state: { from: props.location } }}

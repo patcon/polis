@@ -126,6 +126,7 @@ const doMapCornerPointer = (corner, xx, yy) => {
 }
 
 const graphUtil = (comments, math, badTids, ptptois) => {
+  console.log("test123", comments, math, badTids, ptptois)
     const allXs = [];
     const allYs = [];
 
@@ -136,24 +137,30 @@ const graphUtil = (comments, math, badTids, ptptois) => {
     const compsX = math.pca.comps[0];
     const compsY = math.pca.comps[1];
     for (let i = 0; i < compsX.length; i++) {
-      if (commentsByTid[i]) {
-        let x = compsX[i];
-        let y = compsY[i];
-        // if (i === 32) { // TODO_DEMO_HACK use force layout instead
-        //   x += 0.02;
-        //   y += 0.01;
-        // }
-        if (!badTids[i]) {
-          commentsPoints.push({
-            x: x,
-            y: y,
-            tid: i,
-            txt: commentsByTid[i].txt,
-          });
-        } else {
-          // console.log('skipping bad', i);
+      // if there is only one seed commet bugs with the graph happens -> it will not display
+      // if(compsY != undefined){
+        if (commentsByTid[i]) {
+          let x = compsX[i];
+          let y = compsY[i];
+          // if (i === 32) { // TODO_DEMO_HACK use force layout instead
+          //   x += 0.02;
+          //   y += 0.01;
+          // }
+          if (!badTids[i]) {
+            commentsPoints.push({
+              x: x,
+              y: y,
+              tid: i,
+              txt: commentsByTid[i].txt,
+            });
+          } else {
+            // console.log('skipping bad', i);
+          }
         }
-      }
+      // }else{
+      //    console.log('skipping bad', i);
+      // }
+      
     }
 
     const baseClusterIdToGid = (baseClusterId) => {
