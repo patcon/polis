@@ -47,6 +47,7 @@ const PrivateRoute = ({ component: Component, isLoading, authed, ...rest }) => {
   if (isLoading) {
     return null
   }
+ 
   return (
     <Route
       {...rest}
@@ -57,6 +58,7 @@ const PrivateRoute = ({ component: Component, isLoading, authed, ...rest }) => {
           <Redirect
             to={{ pathname: '/signin', state: { from: props.location } }}
           />
+          // <button onClick={() => {console.log("test redirect oktober", props.location)}}>test123</button>
         )
       }
     />
@@ -122,6 +124,7 @@ const RouteOrRedirect = (props) => {
   }, [props.computedMatch.params.conversation_id]);
 
   useEffect(() => {
+    console.log("response obj", responseObject)
     if(responseObject.user && responseObject.user.tutorialprogress >= 4){
       setshowPoll(true)
     }
@@ -143,6 +146,7 @@ const RouteOrRedirect = (props) => {
             :
              (<div>
                <PollTutorial response={responseObject}  setshowPoll={setshowPoll}/>
+              <button onClick={() => {isDeveloper()}}>test123</button>
               </div>)
             ) : (
               <Redirect
@@ -202,6 +206,10 @@ class App extends React.Component {
 
   isDeveloper() {
     let isDev = false
+
+    if((this.props.user != null) && this.props.user.admin){
+      isDev = true
+    }
 
     if (!_.isUndefined(this.props.isDeveloper) && this.props.isDeveloper) {
       isDev = true
@@ -320,9 +328,6 @@ class App extends React.Component {
 
           <Route exact path="/404" render={() => <DoesNotExist title={"Page not found"} />} />
           <RouteOrRedirect path="/c/:conversation_id" isLoading={this.isLoading()} isAuthed={this.isAuthed()} />
-          <PrivateRouteStart isLoading={this.isLoading()} authed={this.isAuthed()} exact path="/">
-            <Deliberation {...this.props.user} />
-          </PrivateRouteStart>
 
           <Route
             exact

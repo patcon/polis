@@ -137,6 +137,7 @@ async function getUser(
     created: Number(info.created),
     isPolisDev: isPolisDev(uid),
     tutorialprogress: info.tutorialprogress,
+    admin: info.admin,
   };
 }
 
@@ -473,7 +474,7 @@ export {
   getPidForParticipant,
   updateTutorialDoneByEmail,
   getSocialInfoForUsers,
-  
+
 };
 
 export default {
