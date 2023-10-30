@@ -23,9 +23,9 @@ export const Routeprops_tut = {
     },
     "response": {
         "user": {
-            "uid": 2,
-            "email": "www@gmail.com",
-            "hname": "www",
+            "uid": 1,
+            "email": "test_user@gmail.com",
+            "hname": "test_user",
             "hasFacebook": false,
             "hasTwitter": false,
             "hasXid": false,
@@ -172,8 +172,8 @@ export const ResponseObject = {
         "currentPid": 0
     },
     "conversation": {
-        "topic": "test",
-        "description": "test123",
+        "topic": "Tutorial Poll",
+        "description": "Tutorial Description",
         "link_url": null,
         "parent_url": null,
         "upvotes": 1,
