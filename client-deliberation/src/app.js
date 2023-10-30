@@ -56,9 +56,8 @@ const PrivateRoute = ({ component: Component, isLoading, authed, ...rest }) => {
           <Component {...props} />
         ) : (
           <Redirect
-            to={{ pathname: '/signin', state: { from: props.location } }}
+            to={{ pathname: '/404' }}
           />
-          // <button onClick={() => {console.log("test redirect oktober", props.location)}}>test123</button>
         )
       }
     />
@@ -76,9 +75,11 @@ const PrivateRouteStart = ({ children, isLoading, authed, ...rest }) => {
         authed === true ? (
           React.cloneElement(children, props)
         ) : (
-          <Redirect
-            to={{ pathname: '/signin', state: { from: props.location } }}
-          />
+          // <Redirect
+          //   to={{ pathname: '/signin', state: { from: props.location } }}
+          // />
+
+          <button onClick={() =>{console.log(props.location)}}>pistorious123</button>
         )
       }
     />
@@ -265,6 +266,7 @@ class App extends React.Component {
             path="/signin"
             render={() => <SignIn {...this.props} authed={this.isAuthed()} />}
           />
+         
           <Route
             exact
             path="/signin/*"
