@@ -12,8 +12,53 @@ import strings from '../../strings/strings'
 
 const fbAppId = process.env.FB_APP_ID
 
+
+function maybeErrorMessage({ error }) {
+  if (!error) {
+    return null;
+  }
+
+  let userMessage = "An unexpected error occurred. Please try again.";
+  if (error.response) {
+    // Handle specific error codes.
+    switch (error.response.status) {
+      case 400:
+        userMessage = "The information provided is incomplete or incorrect.";
+        break;
+      case 401:
+        userMessage = "You're not authorized to perform this action.";
+        break;
+      case 404:
+        userMessage = "The requested resource was not found.";
+        break;
+      case 500:
+        userMessage = "The server encountered an error. Please try again later.";
+        break;
+      default:
+        userMessage = strings(error.responseText);
+        break;
+    }
+  }
+
+  // Styled error message box.
+  return (
+    <Box
+      sx={{
+        bg: 'highlight', // Use a suitable theme color for error messages.
+        color: 'background', // Ensure text is readable.
+        p: 3,
+        borderRadius: 'default', // Use a theme-specific border-radius here.
+        my: 2,
+      }}
+      role="alert" // Accessibility feature for screen readers.
+    >
+      {userMessage}
+    </Box>
+  );
+}
+
 @connect((state) => state.signin)
-class Createuser extends React.Component {
+class Createuser extends React.Component{
   getDest() {
     return this.props.location.pathname.slice('/createuser'.length)
   }
@@ -28,6 +73,7 @@ class Createuser extends React.Component {
     }
 
     let dest = this.getDest()
+    // let dest = '/c/4rekiewx9s'
     if (!dest.length) {
       dest = '/'
     }
@@ -51,13 +97,6 @@ class Createuser extends React.Component {
     this.props.dispatch(doFacebookSignin(dest, optionalPassword))
   }
 
-  maybeErrorMessage() {
-    let markup = ''
-    if (this.props.error) {
-      markup = <div>{strings(this.props.error.responseText)}</div>
-    }
-    return markup
-  }
 
   drawForm() {
     return (
@@ -131,7 +170,7 @@ class Createuser extends React.Component {
               type="password"
             />
           </Box>
-          {this.maybeErrorMessage()}
+          {<ErrorMessage error={this.props.error} />}
 
           <Box>
             I agree to the{' '}
