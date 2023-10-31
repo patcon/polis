@@ -3,12 +3,12 @@ import Title from "./Title";
 import Subtitle from "./Subtitle";
 import StatementUIContainer from "./StatementUIContainer";
 import StatementUI from "./StatementUI";
-import StatementForm from "./StatementForm";
+import StatementFormTutorial from "./StatementFormTutorial";
 import { Flex, Box, Text, Button, Input } from "theme-ui";
 import HexLogo from "./hexLogo";
 import OpinionContainer from "./OpinionContainer";
 import PolisNet from "../util/net";
-import Visualization from "./Visualization";
+import VisualisationTutorial from "./VisualisationTutorial";
 
 const ConversationUITutorial = (props) => {
   const conversation_id = props.match.params.conversation_id;
@@ -23,42 +23,14 @@ const ConversationUITutorial = (props) => {
     if (!zoom) {
       setZoom(true); 
       setTimeout(() => {
+       
         setZoom(false); 
       }, 500);
     }
   }, [props.currentIndex]);
 
   const vote = (params) => {
-    PolisNet.polisPost(
-      "/api/v3/votes",
-      $.extend({}, params, {
-        pid: "mypid",
-        conversation_id: conversation_id,
-        agid: 1,
-        tid: nextComment.tid,
-        weight: 0,
-      }),
-    )
-      .then((res) => {
-        if (res.nextComment === undefined && res.currentPid !== undefined) {
-          // for correctly showing "you've voted on all statements" message
-          setNextComment({ currentPid: res.currentPid })
-        } else {
-          setNextComment(res.nextComment);
-        }
-        if (!_.isUndefined(res.currentPid)) {
-          processPidResponse(res.currentPid);
-        }
-      })
-      .fail((err) => {
-        if (!navigator.cookieEnabled) {
-          alert(
-            "Sorry, voting requires cookies to be enabled. If you do enable cookies, be sure to reload the page after.",
-          );
-        } else {
-          alert("Apologies, your vote failed to send. Please check your connection and try again.");
-        }
-      });
+   
   };
 
   const processPidResponse = (returnedPid) => {
@@ -168,24 +140,13 @@ const ConversationUITutorial = (props) => {
                      transition: 'transform 0.5s' // add this line for smoother transitions
                     }}>
           <StatementUIContainer >
-            {typeof nextComment !== "undefined" && nextComment.hasOwnProperty("tid") ? (
+          
               <StatementUI
                 author="Anonymous"
                 numStatementsRemaining={nextComment.remaining}
                 statement={nextComment.txt}
-                vote={vote}
-                
               />
-            ) : typeof nextComment !== "undefined" && nextComment.hasOwnProperty("currentPid") ? (
-               
-            getHasVotedUI()
-              
-              
-            ) : (
-              <Text>
-                There aren't any statements yet. Get this conversation started by adding a statement.
-              </Text>
-            )}
+         
           </StatementUIContainer></div>
           {props.response.conversation.write_type !== 0 &&
             <Fragment>
@@ -213,22 +174,32 @@ const ConversationUITutorial = (props) => {
                      transform: zoom && props.currentIndex === 14 ? 'scale(1.2)' : 'scale(1)',
                      transition: 'transform 0.5s' // add this line for smoother transitions
                     }}>
-              <StatementForm conversation_id={conversation_id} processPidResponse={processPidResponse} /> </div>
+
+              <StatementFormTutorial/> 
+              
+              </div>
             </Fragment>
           }
         </Box>
       }
-      {props.response.conversation.vis_type !== 0 && (
+  
+      
         <Fragment>
           <Box sx={{ mb: [3] }}>
             <OpinionContainer showHelperText={props.response.conversation.help_type} />
           </Box>
           <Box sx={{ mb: [5] }}>
-            <Visualization myPid={myPid} conversation_id={conversation_id} />
+          <div style={{
+                     transform: zoom && props.currentIndex === 15 ? 'scale(1.2)' : 'scale(1)',
+                     transition: 'transform 0.5s' // add this line for smoother transitions
+                    }}> 
+                    <VisualisationTutorial myPid={myPid} conversation_id={conversation_id} currentIndex={props.currentIndex} />
+                    </div>
           </Box>
         </Fragment>
-      )
-      }
+       
+      
+      
       <Flex sx={{ justifyContent: "center" }}>
         {/* TODO: enlarge */}
         <HexLogo />

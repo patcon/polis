@@ -147,7 +147,6 @@ const RouteOrRedirect = (props) => {
             :
              (<div>
                <PollTutorial response={responseObject}  setshowPoll={setshowPoll}/>
-              <button onClick={() => {isDeveloper()}}>test123</button>
               </div>)
             ) : (
               <Redirect

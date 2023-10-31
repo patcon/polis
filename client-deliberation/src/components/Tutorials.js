@@ -21,9 +21,10 @@ const Tutorials = ({email = {}, current_state_index, setcurrent_state_index, hea
       'Always keep in mind if you are not sure about something you should always get advise form a laywer wuff',
       '',
       'Now I will give you a short introduction into the poll page. Wufff :)',
-      'First you respond to a statement in the middle of the page',
-      'Secondly the poll shows you that xzy is the case.',
-      'Here you can share your perspective',
+      'First you can respond to a statements in the middle of the page. In the top right corner you can see how many statements are left. You can either agree, disagree or pass the message',
+      'Secondly you can respond to the statement Displayed above. In this case you can share your wheather the tutorial should be longer in this section. After you submitted that, new users can vote on your perspective.',
+      'This graph displays how users votes are grouped based on similar opinions. The two main groups are labeled as A and B, with numbers indicating how many users are in each group. The shaded areas show the range of opinions, and a marker points out the majoritys viewpoint. The graphs purpose is to visually represent and categorize users voting patterns on specific topics.',
+      'Please click now on majority opinion. The blue circle on the graph marks the majoritys opinion. On the bottom right, theres a statement "This Tutorial questions help me." with a red circle indicating 75% of users disagreed with it. In essence, this graphic representation gives insight into user sentiment, with the majority feeling the tutorial questions werent beneficial.',
       ''
     ];
 
