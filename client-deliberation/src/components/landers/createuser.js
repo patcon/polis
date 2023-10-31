@@ -43,14 +43,7 @@ function maybeErrorMessage({ error }) {
   // Styled error message box.
   return (
     <Box
-      sx={{
-        bg: 'highlight', // Use a suitable theme color for error messages.
-        color: 'background', // Ensure text is readable.
-        p: 3,
-        borderRadius: 'default', // Use a theme-specific border-radius here.
-        my: 2,
-      }}
-      role="alert" // Accessibility feature for screen readers.
+    sx={{ mb: [3] }}
     >
       {userMessage}
     </Box>
