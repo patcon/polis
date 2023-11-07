@@ -8,7 +8,7 @@ import { populateUserStore } from './actions'
 
 import _ from 'lodash'
 
-import { Switch, Route, Link, Redirect } from 'react-router-dom'
+import { Switch, Route, Link, Redirect, useHistory } from 'react-router-dom'
 import { Flex, Box, jsx } from 'theme-ui'
 
 /* landers */
@@ -111,6 +111,96 @@ const isMatch = (conv_id) => {
   });
 };
 
+
+
+// const RouteOrRedirect = (props) => {
+//   const [isConversationExists, setIsConversationExists] = useState(null);
+//   const [showPoll, setshowPoll] = useState(false);
+//   const [responseObject, setResponseObject] = useState({});
+//   useEffect(() => {
+//     isMatch(props.computedMatch.params.conversation_id)
+//       .then((status) => {
+//         setResponseObject(status.response)
+//         setIsConversationExists(status.wasSuccessful)
+//       })
+//       .catch((status) => setIsConversationExists(status.wasSuccessful));
+//   }, [props.computedMatch.params.conversation_id]);
+
+//   useEffect(() => {
+//     console.log("response obj", responseObject)
+//     if(responseObject.user && responseObject.user.tutorialprogress >= 4){
+//       setshowPoll(true)
+//     }
+//   }, [responseObject]);
+  
+
+//   if (isConversationExists === null || props.isLoading) {
+//     return <Loading />;
+//   }
+//   const path = props.path + 'ca'
+//   return (
+//     <div>
+//       {isConversationExists ? (
+//         <Route
+//           path={showPoll ? path : props.path}
+//           render={(routeProps) =>
+//             props.isAuthed ? ( showPoll ? 
+//               (<ConversationUI {...routeProps} response={responseObject}/>) 
+//             :
+//              (<div>
+//                <PollTutorial response={responseObject}  setshowPoll={setshowPoll}/>
+//               </div>)
+//             ) : (
+//               <Redirect
+//                   to={{ pathname: '/signin', state: { from: props.location } }}
+//                 />
+//             )
+//           }
+//         />
+//       ) : (
+//         // <Redirect to="/404" />
+//         <DoesNotExist title={"This conversation does not exist."} />
+//       )}
+//     </div>
+//   );
+// };
+
+// const RouteOrRedirect = (props) => {
+//   const [isConversationExists, setIsConversationExists] = useState(null);
+//   const [showPoll, setshowPoll] = useState(false);
+//   const [responseObject, setResponseObject] = useState({});
+//   useEffect(() => {
+//     isMatch(props.computedMatch.params.conversation_id)
+//       .then((status) => {
+//         setResponseObject(status.response)
+//         setIsConversationExists(status.wasSuccessful)
+//       })
+//       .catch((status) => setIsConversationExists(status.wasSuccessful));
+//   }, [props.computedMatch.params.conversation_id]);
+
+//   useEffect(() => {
+//     console.log("response obj", responseObject)
+//     if(responseObject.user && responseObject.user.tutorialprogress >= 4){
+//       setshowPoll(true)
+//     }
+//   }, [responseObject]);
+  
+
+//   if (isConversationExists === null || props.isLoading) {
+//     return <Loading />;
+//   }
+//   return(
+//   <div>
+
+//     {showPoll ? (
+//       <Route path={props.path} render={(routeProps) => <ConversationUI {...routeProps} response={responseObject} />} />
+//     ) : (
+//       <Route path="/tutorial" render={  <PollTutorial response={responseObject} setShowPoll={setShowPoll}/>} />
+//     )}
+//   </div>)
+// };
+
+
 const RouteOrRedirect = (props) => {
   const [isConversationExists, setIsConversationExists] = useState(null);
   const [showPoll, setshowPoll] = useState(false);
@@ -162,6 +252,7 @@ const RouteOrRedirect = (props) => {
     </div>
   );
 };
+
 
 @connect((state) => {
   return state.user
