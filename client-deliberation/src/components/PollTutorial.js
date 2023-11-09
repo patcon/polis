@@ -20,6 +20,8 @@ const PollTutorial = ({ response, setshowPoll}) => {
   const [current_state_progress, setcurrent_state_progress] = useState(0);
   const [current_state_page, setcurrent_state_page] = useState(0);
 
+  const [current_index_polltutorial, setcurrent_index_polltutorial] = useState(0);
+
 
 
   useEffect(() => {
@@ -32,6 +34,7 @@ const PollTutorial = ({ response, setshowPoll}) => {
     setModules(updatedModules);
     
     setProgress(tut_prog *10)
+    setcurrent_state_page(0)
     setcurrent_state_page(tut_prog)
     setcurrent_state_progress(tut_prog)
     
@@ -87,7 +90,7 @@ const PollTutorial = ({ response, setshowPoll}) => {
   const isAtTutorialPageEnd = tutorial_length_of_pages.map(value => value).includes(current_state_index);
 
   if(current_state_page == 9){
-      componentToRender = <ConversationUITutorial {...Routeprops_tut} response={ResponseObject} currentIndex={current_state_index}/>;
+      componentToRender = <ConversationUITutorial {...Routeprops_tut} response={ResponseObject} currentIndex={current_index_polltutorial}/>;
 
   } else {
     componentToRender = <TutorialBackground {...response.user} currentIndex={current_state_page} />;
@@ -130,11 +133,10 @@ const PollTutorial = ({ response, setshowPoll}) => {
       <div>
 
           <>
-            {!isAtTutorialPageEnd && <Tutorials email={response.user} current_state_index={current_state_index} setcurrent_state_index={setcurrent_state_index} heading={heading}/>}
+            {(current_state_page == 9) && <Tutorials email={response.user} current_state_index={current_index_polltutorial} setcurrent_state_index={setcurrent_index_polltutorial} heading={heading}/>}
             <div>
           
               <ProgressBar progress={progress} fillerStyles={fillerStyles}></ProgressBar>
-            {/* {isAtTutorialPageEnd && <Button onClick={handleNextClick} sx={{ marginLeft: '30px'}}>Next</Button>} */}
             {(current_state_progress == current_state_page)  && <Button onClick={(current_state_page == 9) ? () => {setshowPoll(true)} : handleNextClickTutorial} sx={{ marginLeft: '30px'}}>Next</Button>}
         
             </div>
