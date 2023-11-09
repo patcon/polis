@@ -12,8 +12,12 @@ const TutorialsBox = ({ heading, description, email = {}, current_state_index, s
   const descArray = Array.isArray(description) ? description : [description];
 
 
-    const handleRightArrowClick = () => {    
-        setcurrent_state_index(current_state_index+1)     
+    const handleRightArrowClick = () => {   
+      console.log("click") 
+      if(!(descArray[current_state_index+1] == '')){
+        setcurrent_state_index(current_state_index+1);
+      }
+     
     };
   
     const handleLeftArrowClick = () => {

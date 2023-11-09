@@ -136,7 +136,7 @@ const ConversationUITutorial = (props) => {
           }
            
            <div style={{
-                     transform: zoom && props.currentIndex === 13 ? 'scale(1.2)' : 'scale(1)',
+                     transform: zoom && props.currentIndex === 1 ? 'scale(1.2)' : 'scale(1)',
                      transition: 'transform 0.5s' // add this line for smoother transitions
                     }}>
           <StatementUIContainer >
@@ -171,7 +171,7 @@ const ConversationUITutorial = (props) => {
                 </Box>
               }
                <div style={{
-                     transform: zoom && props.currentIndex === 14 ? 'scale(1.2)' : 'scale(1)',
+                     transform: zoom && props.currentIndex === 2 ? 'scale(1.2)' : 'scale(1)',
                      transition: 'transform 0.5s' // add this line for smoother transitions
                     }}>
 
@@ -190,7 +190,7 @@ const ConversationUITutorial = (props) => {
           </Box>
           <Box sx={{ mb: [5] }}>
           <div style={{
-                     transform: zoom && props.currentIndex === 15 ? 'scale(1.2)' : 'scale(1)',
+                     transform: zoom && props.currentIndex === 3 ? 'scale(1.2)' : 'scale(1)',
                      transition: 'transform 0.5s' // add this line for smoother transitions
                     }}> 
                     <VisualisationTutorial myPid={myPid} conversation_id={conversation_id} currentIndex={props.currentIndex} />

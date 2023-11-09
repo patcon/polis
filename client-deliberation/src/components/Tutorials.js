@@ -8,24 +8,13 @@ const Tutorials = ({email = {}, current_state_index, setcurrent_state_index, hea
 
   const descriptions = [
        
-      'My name is Charlie and I am here to help you train your AI with the right attributes.',
-      'If you want to learn more about AI, this highlighted YouTube Video will help you understand the topic. If you have any further questions, you can read the rest of the page.',
-      'Now you can familiarize yourself with the basics of AI and afterward, you can start voting on your first poll.',
-      '',
-      "In this section I will help you to get a proper understanding of AI.",
-      "AI, or Artificial Intelligence, is like a robot brain inside computers, phones, or even toys. This robot brain can think, learn, and solve problems, almost like how you do in school!",
-      "If you are hooked now you can also read through the other sections. Happy Learning Wuff!",
-      '',
-      'Of course there are also some legal points we always have to consider.',
-      'This page provides you with all the information necessary for creating an AI, which is legal',
-      'Always keep in mind if you are not sure about something you should always get advise form a laywer wuff',
-      '',
       'Now I will give you a short introduction into the poll page. Wufff :)',
       'First you can respond to a statements in the middle of the page. In the top right corner you can see how many statements are left. You can either agree, disagree or pass the message',
       'Secondly you can respond to the statement Displayed above. In this case you can share your wheather the tutorial should be longer in this section. After you submitted that, new users can vote on your perspective.',
       'This graph displays how users votes are grouped based on similar opinions. The two main groups are labeled as A and B, with numbers indicating how many users are in each group. The shaded areas show the range of opinions, and a marker points out the majoritys viewpoint. The graphs purpose is to visually represent and categorize users voting patterns on specific topics.',
       'Please click now on majority opinion. The blue circle on the graph marks the majoritys opinion. On the bottom right, theres a statement "This Tutorial questions help me." with a red circle indicating 75% of users disagreed with it. In essence, this graphic representation gives insight into user sentiment, with the majority feeling the tutorial questions werent beneficial.',
       ''
+      
     ];
 
 

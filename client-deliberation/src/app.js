@@ -216,7 +216,7 @@ const RouteOrRedirect = (props) => {
 
   useEffect(() => {
     console.log("response obj", responseObject)
-    if(responseObject.user && responseObject.user.tutorialprogress >= 4){
+    if(responseObject.user && responseObject.user.tutorialprogress >= 10){
       setshowPoll(true)
     }
   }, [responseObject]);

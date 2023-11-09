@@ -9,55 +9,64 @@ import ConversationUI from "./ConversationUI";
 import Legal from "./Legal";
 import Sidebar from "./Sidebar";
 import {ResponseObject, Routeprops_tut} from "./PollConsts";
+import PolisNet from "../util/net";
+import TutorialBackground from "./TutorialBackground";
 
 const PollTutorial = ({ response, setshowPoll}) => {
   const [progress, setProgress] = useState(0);
   const [current_state_index, setcurrent_state_index] = useState(0);
   const tutorial_length_of_pages = [3, 7, 11, 17];
 
+  const [current_state_progress, setcurrent_state_progress] = useState(0);
+  const [current_state_page, setcurrent_state_page] = useState(0);
+
+
+
   useEffect(() => {
     const tut_prog = response.user.tutorialprogress
     const updatedModules = modules.map((module, index) => ({
       ...module,
+      currently_displayed: index === tut_prog,
       not_completed: (index > response.user.tutorialprogress) ? true : false
     }));
-    setModules(updatedModules); // Update the modules state
-    console.log("hello", modules)
-    if (tut_prog > 0 && tut_prog <4) {
-      const newIndex = tutorial_length_of_pages[tut_prog - 1];
-      setcurrent_state_index(newIndex+1);
-      setProgress(progress + tut_prog*25)
-    }
+    setModules(updatedModules);
     
+    setProgress(tut_prog *10)
+    setcurrent_state_page(tut_prog)
+    setcurrent_state_progress(tut_prog)
     
   }, []);
 
 
   const handleNextClick = () => {
     setcurrent_state_index(current_state_index+1)
-    setProgress(progress + 25);
+    setProgress(progress + 10);
   };
 
-  const handleModuleClick = (moduleIndex) => {
-    if (response.user.tutorialprogress >= moduleIndex) {
-      // Set all modules' currently_displayed to false
+  const handleNextClickTutorial = () => {
+    handleTutorialCompletion(response.user.email)
+    console.log("user respones", response.user.email)
+  };
+
+  const handleModuleClick = (moduleIndex, come_from_next) => {
+    if ((current_state_progress >= moduleIndex) !== come_from_next) {
+      console.log("curentstateprogress", current_state_progress)
       const updatedModules = modules.map((module, index) => ({
         ...module,
         currently_displayed: index === moduleIndex,
-        not_completed: (index > response.user.tutorialprogress) ? true : false
+        not_completed: (index > (come_from_next ? current_state_progress + 1 : current_state_progress)) ? true : false
       }));
-
-      
-      
-      setModules(updatedModules); // Update the modules state
-  
+      setcurrent_state_page(moduleIndex)
+      setModules(updatedModules); 
       const newIndex = tutorial_length_of_pages[moduleIndex];
       setcurrent_state_index(newIndex);
-      setProgress((moduleIndex + 1) * (100 / tutorial_length_of_pages.length));
+      console.log("progress", moduleIndex, "length ",tutorial_length_of_pages.length, "result", (moduleIndex) * (100 / tutorial_length_of_pages.length))
+      setProgress((moduleIndex) * 10);
       
     } else {
       alert("You havent been to this module yet. Please continue ")
     }
+    console.log("I came down here", moduleIndex)
   };
   
 
@@ -74,24 +83,14 @@ const PollTutorial = ({ response, setshowPoll}) => {
 
   let componentToRender;
   let heading;
-  let show_progress = (response.user.tutorialprogress < 4 && !(current_state_index > tutorial_length_of_pages[tutorial_length_of_pages.length -1])) || (!(response.user.tutorialprogress < 4) && current_state_index > tutorial_length_of_pages[tutorial_length_of_pages.length -1])
+  // let show_progress = (response.user.tutorialprogress < 4 && !(current_state_index > tutorial_length_of_pages[tutorial_length_of_pages.length -1])) || (!(response.user.tutorialprogress < 4) && current_state_index > tutorial_length_of_pages[tutorial_length_of_pages.length -1])
   const isAtTutorialPageEnd = tutorial_length_of_pages.map(value => value).includes(current_state_index);
 
-
-  if(response.user.tutorialprogress > 3 || current_state_index > tutorial_length_of_pages[tutorial_length_of_pages.length -1 ]){
-    setshowPoll(true)
-  } else if (current_state_index <= tutorial_length_of_pages[0]) {
-    componentToRender = <IndividualDeliberation {...response.user} currentIndex={current_state_index} />;
-    heading = "Individual Deliberation"
-  } else if (current_state_index > tutorial_length_of_pages[0] && current_state_index <= tutorial_length_of_pages[1]) {
-      componentToRender = <UnderstandAI {...response.users} currentIndex={current_state_index}/>;
-      heading = "UnderstandAI"
-  } else if (current_state_index > tutorial_length_of_pages[1] && current_state_index <= tutorial_length_of_pages[2]) {
-      componentToRender = <Legal currentIndex={current_state_index} />;
-      heading = "Legal"
-  } else if (current_state_index > tutorial_length_of_pages[2] && current_state_index <= tutorial_length_of_pages[3]) {
+  if(current_state_page == 9){
       componentToRender = <ConversationUITutorial {...Routeprops_tut} response={ResponseObject} currentIndex={current_state_index}/>;
-      heading = "Poll"
+
+  } else {
+    componentToRender = <TutorialBackground {...response.user} currentIndex={current_state_page} />;
   }
   const [modules, setModules] = useState([
     { name: 'Competence', progress: 0 , currently_displayed: true, not_completed: false},
@@ -103,7 +102,24 @@ const PollTutorial = ({ response, setshowPoll}) => {
     { name: 'Duty to Former Clients', progress: 60, currently_displayed: false, not_completed: true },
     { name: 'Advisor', progress: 70, currently_displayed: false, not_completed: true },
     { name: 'Meritorious Claims and Contentions ', progress: 80, currently_displayed: false, not_completed: true },
+    { name: 'Poll Explenation', progress: 80, currently_displayed: false, not_completed: true },
     ]);
+
+    const handleTutorialCompletion = (userEmail) => {
+      setcurrent_state_progress(current_state_progress+1)
+      handleModuleClick(current_state_progress+1, true)
+      console.log("test123123", current_state_index)
+      PolisNet.polisPost('/api/v3/updateTutorialDoneByEmail', { email: userEmail })
+        .then(response => {
+          if (response.success) {
+            console.log('Tutorial updated successfully!', response.result);
+          
+          } else {
+            console.error('Failed to update tutorial:', response.error);
+          }
+        })
+        .fail(err => console.error('Error calling API:', err)); 
+    };
  
 
 
@@ -112,18 +128,19 @@ const PollTutorial = ({ response, setshowPoll}) => {
       <Sidebar modules={modules} onModuleClick={handleModuleClick} />
       {componentToRender}
       <div>
-      {show_progress && (
+
           <>
             {!isAtTutorialPageEnd && <Tutorials email={response.user} current_state_index={current_state_index} setcurrent_state_index={setcurrent_state_index} heading={heading}/>}
             <div>
-            {current_state_index <= tutorial_length_of_pages[tutorial_length_of_pages.length - 1] && (
+          
               <ProgressBar progress={progress} fillerStyles={fillerStyles}></ProgressBar>
-            )}
-            {isAtTutorialPageEnd && <Button onClick={handleNextClick} sx={{ marginLeft: '30px'}}>Next</Button>}
+            {/* {isAtTutorialPageEnd && <Button onClick={handleNextClick} sx={{ marginLeft: '30px'}}>Next</Button>} */}
+            {(current_state_progress == current_state_page)  && <Button onClick={(current_state_page == 9) ? () => {setshowPoll(true)} : handleNextClickTutorial} sx={{ marginLeft: '30px'}}>Next</Button>}
+        
             </div>
             
           </>
-        )}
+     
 
       </div>
 

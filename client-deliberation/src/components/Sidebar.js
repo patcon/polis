@@ -25,7 +25,7 @@ const Sidebar = ({ modules, onModuleClick }) => {  const sidebarStyles = {
     <div style={sidebarStyles}>
       <h1 style={headingStyles}>Poll Tutorial</h1>
       {modules.map((module, index) => (
-        <div key={index} onClick={() => onModuleClick(index)} style={{ cursor: 'pointer', margin: '10px 0' }}>
+        <div key={index} onClick={() => onModuleClick(index, false)} style={{ cursor: 'pointer', margin: '10px 0' }}>
           <Module name={module.name} progress={module.progress} currently_displayed={module.currently_displayed} not_completed={module.not_completed} />
         </div>
       ))}
