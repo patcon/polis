@@ -135,9 +135,18 @@ const PollTutorial = ({ response, setshowPoll}) => {
           <>
             {(current_state_page == 9) && <Tutorials email={response.user} current_state_index={current_index_polltutorial} setcurrent_state_index={setcurrent_index_polltutorial} heading={heading}/>}
             <div>
-          
-              <ProgressBar progress={progress} fillerStyles={fillerStyles}></ProgressBar>
-            {(current_state_progress == current_state_page)  && <Button onClick={(current_state_page == 9) ? () => {setshowPoll(true)} : handleNextClickTutorial} sx={{ marginLeft: '30px'}}>Next</Button>}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+  <div style={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+    <ProgressBar progress={progress} fillerStyles={fillerStyles}></ProgressBar>
+  </div>
+  {(current_state_progress == current_state_page) && 
+    <Button onClick={(current_state_page == 9) ? () => {setshowPoll(true)} : handleNextClickTutorial} 
+            sx={{ marginLeft: '30px' }}>
+      Next
+    </Button>
+  }
+</div>
+
         
             </div>
             
