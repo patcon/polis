@@ -22,7 +22,7 @@ const TutorialBackground = (props) => {
   }, [props.currentIndex]);
 
 
-  const headers = ["Competence in Client-Lawyer Relationship" ,"Scope of Representation and Allocation of Authority", "Explanation and Scenario Overview", "Confidentiality of Information", "Conflict of Interest: Current Client", "Conflict of Interest", "Duty to Former Clients", "Advisor", "Meritorious Claims and Contentions "]
+  const headers = ["Competence in Client-Lawyer Relationship" ,"Scope of Representation and Allocation of Authority", "Diligence", "Confidentiality of Information", "Conflict of Interest: Current Client", "Conflict of Interest", "Duty to Former Clients", "Advisor", "Meritorious Claims and Contentions "]
 
   const heading_first = ["Example Scenario Involving layer Alex", "Lawyer-Client Decision-Making in Legal Representation", "Diligence - Client-Lawyer Relationship", "Primary Directive","Conflict of Interest: Current Clients", "General Principles of Conflict of Interest with Current Clients Specific", "Understanding Rule 1.9 - Duty to Former Clients", "Overview of Attorney's Duties", "Understanding Rule 3.1 - The Basic Principle",] 
 
@@ -181,19 +181,30 @@ const TutorialBackground = (props) => {
     transition: 'transform 0.5s',
   };
 
+  console.log(props.tutorial_text)
+
   return (
     <Box sx={{ maxWidth: "768px", margin: "auto", py: "20px", px: "10px"}}>
       <HexLogo />
-      <Title value={headers[props.currentIndex]} />
-      
+      <Title value={(props.tutorial_text[props.currentIndex] != undefined) ? props.tutorial_text[props.currentIndex].name : headers[props.currentIndex]} />
+{/*       
       <div style={{...videoStyles, display: 'flex', justifyContent: 'center', margin: '20px'}}>
       <iframe width="560" height="315" src="https://www.youtube.com/embed/R9OHn5ZF4Uo?si=7z2akiELGhjCaO1R" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-      </div>
-      
-      <IntegrateBox heading={heading_first[props.currentIndex]} description={description_first[props.currentIndex]} items={list_items_first[props.currentIndex]}></IntegrateBox>
+      </div> */}
+  
+      <IntegrateBox 
+        heading={(props.tutorial_text[props.currentIndex] != undefined) ? props.tutorial_text[props.currentIndex].subheading_one : heading_first[props.currentIndex]} 
+        description={(props.tutorial_text[props.currentIndex]!= undefined) ? props.tutorial_text[props.currentIndex].paragraph_one : description_first[props.currentIndex]}  
+        items={(props.tutorial_text[props.currentIndex] != undefined) ? props.tutorial_text[props.currentIndex].bulletpoint_one : list_items_first[props.currentIndex]}   
+      ></IntegrateBox>
 
 
-      <IntegrateBoxAndConclusion heading={heading_second[props.currentIndex]} description={description_second[props.currentIndex]} items={list_items_second[props.currentIndex]} conclusion={conclusion[props.currentIndex]}></IntegrateBoxAndConclusion>
+      <IntegrateBoxAndConclusion 
+        heading={(props.tutorial_text[props.currentIndex] != undefined) ? props.tutorial_text[props.currentIndex].subheading_two : heading_second[props.currentIndex]} 
+        description={(props.tutorial_text[props.currentIndex]!= undefined) ? props.tutorial_text[props.currentIndex].paragraph_two : description_second[props.currentIndex]}  
+        items={(props.tutorial_text[props.currentIndex] != undefined) ? props.tutorial_text[props.currentIndex].bulletpoint_two : list_items_second[props.currentIndex]}  
+        conclusion={(props.tutorial_text[props.currentIndex] != undefined) ? props.tutorial_text[props.currentIndex].conclusion : conclusion[props.currentIndex]}
+      ></IntegrateBoxAndConclusion>
     </Box>
   );
 };

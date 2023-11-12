@@ -11,6 +11,8 @@ import Sidebar from "./Sidebar";
 import {ResponseObject, Routeprops_tut} from "./PollConsts";
 import PolisNet from "../util/net";
 import TutorialBackground from "./TutorialBackground";
+// import { ToastContainer, toast } from 'react-toastify';
+
 
 const PollTutorial = ({ response, setshowPoll}) => {
   const [progress, setProgress] = useState(0);
@@ -21,11 +23,21 @@ const PollTutorial = ({ response, setshowPoll}) => {
   const [current_state_page, setcurrent_state_page] = useState(0);
 
   const [current_index_polltutorial, setcurrent_index_polltutorial] = useState(0);
+  const [current_tutorial_text, setcurrent_tutorial_text] = useState({});
+
 
 
 
   useEffect(() => {
     const tut_prog = response.user.tutorialprogress
+
+    PolisNet.polisGet('/api/v3/getTutorialText')
+        .then(response => {
+          console.log("response", response)
+          setcurrent_tutorial_text(response)
+        })
+        .fail(err => console.error('Error calling API:', err)); 
+
     const updatedModules = modules.map((module, index) => ({
       ...module,
       currently_displayed: index === tut_prog,
@@ -67,7 +79,9 @@ const PollTutorial = ({ response, setshowPoll}) => {
       setProgress((moduleIndex) * 10);
       
     } else {
-      alert("You havent been to this module yet. Please continue ")
+      toast.warn("You haven't been to this module yet. Please continue.", {
+        position: toast.POSITION.TOP_CENTER
+      });
     }
     console.log("I came down here", moduleIndex)
   };
@@ -93,7 +107,7 @@ const PollTutorial = ({ response, setshowPoll}) => {
       componentToRender = <ConversationUITutorial {...Routeprops_tut} response={ResponseObject} currentIndex={current_index_polltutorial}/>;
 
   } else {
-    componentToRender = <TutorialBackground {...response.user} currentIndex={current_state_page} />;
+    componentToRender = <TutorialBackground {...response.user} currentIndex={current_state_page} tutorial_text={current_tutorial_text}  />;
   }
   const [modules, setModules] = useState([
     { name: 'Competence', progress: 0 , currently_displayed: true, not_completed: false},
@@ -123,11 +137,16 @@ const PollTutorial = ({ response, setshowPoll}) => {
         })
         .fail(err => console.error('Error calling API:', err)); 
     };
+
+
+ 
+
  
 
 
   return (
     <Box sx={{ maxWidth: "768px", margin: "auto", py: "20px", px: "10px"}}>
+      {/* <ToastContainer /> */}
       <Sidebar modules={modules} onModuleClick={handleModuleClick} />
       {componentToRender}
       <div>
@@ -140,7 +159,7 @@ const PollTutorial = ({ response, setshowPoll}) => {
     <ProgressBar progress={progress} fillerStyles={fillerStyles}></ProgressBar>
   </div>
   {(current_state_progress == current_state_page) && 
-    <Button onClick={(current_state_page == 9) ? () => {setshowPoll(true)} : handleNextClickTutorial} 
+    <Button onClick={(current_state_page == 9) ? () => {setshowPoll(true)} : handleTutorialCompletion} 
             sx={{ marginLeft: '30px' }}>
       Next
     </Button>

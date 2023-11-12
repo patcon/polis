@@ -68,10 +68,7 @@ const TutorialsBox = ({ heading, description, email = {}, current_state_index, s
             </Box>
             {(descArray[current_state_index+1] == '') ? ( 
               <div>
-              <PolisButton onClick={() => {
-                handleTutorialCompletion(email.email);
-              }}  buttonText={'Start'}></PolisButton>
-           
+              
               </div>
             ) : (
                 <ArrowIcon onClick={handleRightArrowClick} style={{ position: 'absolute', bottom: '-10px', right: '0', cursor: 'pointer' }} />)}
