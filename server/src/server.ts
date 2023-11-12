@@ -2467,8 +2467,62 @@ function initializePolisHelpers() {
     });
 }
 
+function handle_GET_TutorialText(
+  req: {
+    
+  },
+  res: {
+    
+    json: (arg0: {}) => void;
+  }
 
+) {
+ 
+  return new Promise(function (resolve, reject) {
+    pgQuery(
+      "SELECT * FROM tutorialText;",
+      [],
+      function (err, results) {
+        if (err) {
+          reject(err);
+          res.status(500).json({ error: err.message });
+        } else if (!results || !results.rows || !results.rows.length) {
+          reject(new Error("Error: No tutorial text found"));
+          res.status(404).json({ error: "Error: No tutorial text found" });
+        } else {
+          resolve(results.rows);
+          res.status(200).json(results.rows);
+        }
+      }
+    );
+  });}
+// const fakeTutorialTexts = [
+  //   {
+  //     uid: 1,
+  //     name: 'Introduction to SQL',
+  //     subheading_one: 'What is SQL?',
+  //     subheading_two: 'Basics of SQL',
+  //     paragraph_one: 'SQL, or Structured Query Language, is a standard language for accessing and manipulating databases...',
+  //     paragraph_two: 'With SQL, you can insert, search, update, delete, create, and modify records in your database...',
+  //     conclusion: 'Knowing SQL is a fundamental skill for anyone involved in data management or analysis...',
+  //     bulletpoint_one: ['CRUD operations', 'Database schemas', 'Data types in SQL'],
+  //     bulletpoint_two: ['Benefits of using SQL', 'SQL vs NoSQL', 'Common SQL database systems']
+  //   },
+  //   // ... potentially more tutorial texts
+  // ];
 
+  // res.json({
+  //   test: fakeTutorialTexts,
+  // });
+  // getAllTutorialTexts()
+  //   .then(tutorialTexts => {
+  //     res.json({ tutorialTexts });
+  //   })
+  //   .catch(err => {
+  //     // Log the error or handle it as per your requirements
+  //     res.status(500).json({ error: 'Failed to retrieve tutorial texts', details: err });
+  //   });
+ 
 
   function updateTutorialDoneByEmail(
   //   req: { p: { email: any } },
@@ -2579,6 +2633,18 @@ Feel free to reply to this email if you need help.`;
       return rows[0].uid;
     });
   }
+
+function getAllTutorialTexts() {
+  return new Promise((resolve, reject) => {
+    pg.query_readOnly(
+      "SELECT * FROM tutorialText",
+      []).then((element) => {
+         return {stuff: element}
+      })
+      
+    ;
+  });
+}
 
   function clearCookie(
     req: { [key: string]: any; headers?: { origin: string } },
@@ -14225,6 +14291,7 @@ Thanks for using Polis!
     handle_POST_auth_new,
     handle_POST_auth_password,
     updateTutorialDoneByEmail,
+    handle_GET_TutorialText,
     handle_POST_auth_pwresettoken,
     handle_POST_comments,
     handle_POST_contexts,

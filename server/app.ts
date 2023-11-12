@@ -50,6 +50,7 @@ helpersInitialized.then(
       fetchIndexWithoutPreloadData,
       getPidForParticipant,
       updateTutorialDoneByEmail,
+      handle_GET_TutorialText,
       haltOnTimeout,
       HMAC_SIGNATURE_PARAM_NAME,
       hostname,
@@ -286,6 +287,12 @@ helpersInitialized.then(
       want("math_tick", getInt, assignToP, -1),
       handle_GET_math_correlationMatrix
     );
+
+    app.get(
+      "/api/v3/getTutorialText",
+      moveToBody,
+      handle_GET_TutorialText
+    )
 
 
     app.post(
