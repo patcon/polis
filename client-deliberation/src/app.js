@@ -94,7 +94,7 @@ const RouteOrRedirect = (props) => {
   const [isConversationExists, setIsConversationExists] = useState(null);
   const [showPoll, setshowPoll] = useState(false);
   const [responseObject, setResponseObject] = useState({});
-  const { onResponse, setShowPoll } = props; 
+  const { onResponse, setShowPoll, handleRouteProps  } = props; 
   
    
   useEffect(() => {
@@ -111,9 +111,9 @@ const RouteOrRedirect = (props) => {
   }, [props.computedMatch.params.conversation_id, onResponse]);
 
   useEffect(() => {
-    console.log("response obj", responseObject)
+    console.log("showpoll gets up", responseObject.user)
     if(responseObject.user && responseObject.user.tutorialprogress >= 10){
-      setshowPoll(true)
+      console.log(setshowPoll)
     }
   }, [responseObject, setShowPoll]);
   
@@ -127,28 +127,26 @@ const RouteOrRedirect = (props) => {
       {isConversationExists ? (
         <Route
           path={props.path}
-          render={(routeProps) =>
-            props.isAuthed ? ( showPoll ? 
-              (<ConversationUI {...routeProps} response={responseObject}/>) 
-            :
-             (<div>
-               <PollTutorial response={responseObject}  setshowPoll={setshowPoll}/>
-              </div>)
-            ) : (
-              <Redirect
-                  to={{ pathname: '/signin', state: { from: props.location } }}
-                />
-            )
-          }
+          render={(routeProps) => {
+            // Call handleRouteProps with the current routeProps
+            handleRouteProps(routeProps);
+
+            // Return the component or redirect conditionally
+            if (props.isAuthed) {
+              return showPoll ? 
+                <ConversationUI {...routeProps} response={responseObject}/> :
+                <Redirect to={{ pathname: '/tutorial'}} />;
+            } else {
+              return <Redirect to={{ pathname: '/signin', state: { from: props.location } }} />;
+            }
+          }}
         />
       ) : (
-        // <Redirect to="/404" />
         <DoesNotExist title={"This conversation does not exist."} />
       )}
     </div>
   );
 };
-
 
 @connect((state) => {
   return state.user
@@ -158,8 +156,9 @@ class App extends React.Component {
     super(props)
     this.state = {
       sidebarOpen: false,
-      response: null,
+       response: null,
       showPoll: false,
+      routeProps: null,
       // sidebarDocked: true,
     }
   }
@@ -177,11 +176,15 @@ class App extends React.Component {
     mql.addListener(this.mediaQueryChanged.bind(this))
     this.setState({ mql: mql, docked: mql.matches })
   }
-  // Convert handleResponse to an arrow function
+
   handleResponse = (response) => {
+    console.log("handleResponse called with:", response);
     this.setState({ response });
   }
 
+  handleRouteProps = (routeProps) => {
+    this.setState({ routeProps });
+}
   setShowPoll = (showPoll) => {
     this.setState({ showPoll });
   } 
@@ -312,11 +315,19 @@ class App extends React.Component {
           <Route
             exact
             path="/tutorial"
-            render={() => <PollTutorial response={responseObject}  setshowPoll={setshowPoll}/>}
+            render={() => 
+              this.state.response ? this.state.showPoll ?
+              <Redirect to={{ pathname: '/poll'}} /> : this.state.response.user.tutorialprogress >= 10 ? <Redirect to={{ pathname: '/poll'}} /> : <PollTutorial response={this.state.response} setshowPoll={this.setShowPoll}/>   : 
+                <DoesNotExist title={"Please use via a Link"} />// or any other placeholder component
+            }
           />    
 
 
-
+            <Route
+            exact
+            path="/poll"
+            render={() => <ConversationUI {...this.state.routeProps} response={this.state.response}/>}
+          />
 
           <Route
             exact
@@ -337,7 +348,7 @@ class App extends React.Component {
           />    
 
           <Route exact path="/404" render={() => <DoesNotExist title={"Page not found"} />} />
-          <RouteOrRedirect path="/c/:conversation_id" isLoading={this.isLoading()} isAuthed={this.isAuthed()} onResponse={this.handleResponse} setShowPoll={this.setShowPoll} />
+          <RouteOrRedirect path="/c/:conversation_id" isLoading={this.isLoading()} isAuthed={this.isAuthed()} onResponse={this.handleResponse} setShowPoll={this.setShowPoll} handleRouteProps={this.handleRouteProps} />
 
           <Route
             exact

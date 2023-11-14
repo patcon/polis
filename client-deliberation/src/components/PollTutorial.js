@@ -139,6 +139,27 @@ const PollTutorial = ({ response, setshowPoll}) => {
         .fail(err => console.error('Error calling API:', err)); 
     };
 
+    const handleTutorialCompletion2 = () => {
+
+      setcurrent_state_progress(current_state_progress+1)
+      handleModuleClick(current_state_progress+1, true)
+      console.log("test123123", response.user.email)
+      setshowPoll(true)
+      PolisNet.polisPost('/api/v3/updateTutorialDoneByEmail', { email: response.user.email })
+        .then(response => {
+          
+          if (response.success) {
+            console.log('Tutorial updated successfully!', response.result);
+          
+          } else {
+            console.error('Failed to update tutorial:', response.error);
+          }
+        })
+        .fail(err => console.error('Error calling API:', err)); 
+       
+    };
+
+
 
  
 
@@ -160,7 +181,7 @@ const PollTutorial = ({ response, setshowPoll}) => {
     <ProgressBar progress={progress} fillerStyles={fillerStyles}></ProgressBar>
   </div>
   {(current_state_progress == current_state_page) && 
-    <Button onClick={(current_state_page == 9) ? () => {setshowPoll(true)} : handleTutorialCompletion} 
+    <Button onClick={(current_state_page == 9) ? () => handleTutorialCompletion2(): handleTutorialCompletion} 
             sx={{ marginLeft: '30px' }}>
       Next
     </Button>
