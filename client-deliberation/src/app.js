@@ -64,29 +64,6 @@ const PrivateRoute = ({ component: Component, isLoading, authed, ...rest }) => {
   )
 }
 
-const PrivateRouteStart = ({ children, isLoading, authed, ...rest }) => {
-  if (isLoading) {
-    return null;
-  }
-  return (
-    <Route
-      {...rest}
-      render={(props) =>
-        authed === true ? (
-          React.cloneElement(children, props)
-        ) : (
-          // <Redirect
-          //   to={{ pathname: '/signin', state: { from: props.location } }}
-          // />
-
-          <button onClick={() =>{console.log(props.location)}}>pistorious123</button>
-        )
-      }
-    />
-  );
-};
-
-
 
 PrivateRoute.propTypes = {
   component: PropTypes.element,
@@ -113,113 +90,32 @@ const isMatch = (conv_id) => {
 
 
 
-// const RouteOrRedirect = (props) => {
-//   const [isConversationExists, setIsConversationExists] = useState(null);
-//   const [showPoll, setshowPoll] = useState(false);
-//   const [responseObject, setResponseObject] = useState({});
-//   useEffect(() => {
-//     isMatch(props.computedMatch.params.conversation_id)
-//       .then((status) => {
-//         setResponseObject(status.response)
-//         setIsConversationExists(status.wasSuccessful)
-//       })
-//       .catch((status) => setIsConversationExists(status.wasSuccessful));
-//   }, [props.computedMatch.params.conversation_id]);
-
-//   useEffect(() => {
-//     console.log("response obj", responseObject)
-//     if(responseObject.user && responseObject.user.tutorialprogress >= 4){
-//       setshowPoll(true)
-//     }
-//   }, [responseObject]);
-  
-
-//   if (isConversationExists === null || props.isLoading) {
-//     return <Loading />;
-//   }
-//   const path = props.path + 'ca'
-//   return (
-//     <div>
-//       {isConversationExists ? (
-//         <Route
-//           path={showPoll ? path : props.path}
-//           render={(routeProps) =>
-//             props.isAuthed ? ( showPoll ? 
-//               (<ConversationUI {...routeProps} response={responseObject}/>) 
-//             :
-//              (<div>
-//                <PollTutorial response={responseObject}  setshowPoll={setshowPoll}/>
-//               </div>)
-//             ) : (
-//               <Redirect
-//                   to={{ pathname: '/signin', state: { from: props.location } }}
-//                 />
-//             )
-//           }
-//         />
-//       ) : (
-//         // <Redirect to="/404" />
-//         <DoesNotExist title={"This conversation does not exist."} />
-//       )}
-//     </div>
-//   );
-// };
-
-// const RouteOrRedirect = (props) => {
-//   const [isConversationExists, setIsConversationExists] = useState(null);
-//   const [showPoll, setshowPoll] = useState(false);
-//   const [responseObject, setResponseObject] = useState({});
-//   useEffect(() => {
-//     isMatch(props.computedMatch.params.conversation_id)
-//       .then((status) => {
-//         setResponseObject(status.response)
-//         setIsConversationExists(status.wasSuccessful)
-//       })
-//       .catch((status) => setIsConversationExists(status.wasSuccessful));
-//   }, [props.computedMatch.params.conversation_id]);
-
-//   useEffect(() => {
-//     console.log("response obj", responseObject)
-//     if(responseObject.user && responseObject.user.tutorialprogress >= 4){
-//       setshowPoll(true)
-//     }
-//   }, [responseObject]);
-  
-
-//   if (isConversationExists === null || props.isLoading) {
-//     return <Loading />;
-//   }
-//   return(
-//   <div>
-
-//     {showPoll ? (
-//       <Route path={props.path} render={(routeProps) => <ConversationUI {...routeProps} response={responseObject} />} />
-//     ) : (
-//       <Route path="/tutorial" render={  <PollTutorial response={responseObject} setShowPoll={setShowPoll}/>} />
-//     )}
-//   </div>)
-// };
-
-
 const RouteOrRedirect = (props) => {
   const [isConversationExists, setIsConversationExists] = useState(null);
   const [showPoll, setshowPoll] = useState(false);
   const [responseObject, setResponseObject] = useState({});
+  const { onResponse, setShowPoll } = props; 
+  
+   
   useEffect(() => {
+    console.log("I was here")
     isMatch(props.computedMatch.params.conversation_id)
       .then((status) => {
         setResponseObject(status.response)
         setIsConversationExists(status.wasSuccessful)
+        onResponse(status.response); // Use onResponse correctly
+        console.log(onResponse)
       })
       .catch((status) => setIsConversationExists(status.wasSuccessful));
-  }, [props.computedMatch.params.conversation_id]);
+      console.log("test123", isConversationExists)
+  }, [props.computedMatch.params.conversation_id, onResponse]);
 
   useEffect(() => {
     console.log("response obj", responseObject)
     if(responseObject.user && responseObject.user.tutorialprogress >= 10){
       setshowPoll(true)
     }
-  }, [responseObject]);
+  }, [responseObject, setShowPoll]);
   
 
   if (isConversationExists === null || props.isLoading) {
@@ -261,10 +157,14 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      sidebarOpen: false
+      sidebarOpen: false,
+      response: null,
+      showPoll: false,
       // sidebarDocked: true,
     }
   }
+
+
 
   loadUserData() {
     this.props.dispatch(populateUserStore())
@@ -277,6 +177,14 @@ class App extends React.Component {
     mql.addListener(this.mediaQueryChanged.bind(this))
     this.setState({ mql: mql, docked: mql.matches })
   }
+  // Convert handleResponse to an arrow function
+  handleResponse = (response) => {
+    this.setState({ response });
+  }
+
+  setShowPoll = (showPoll) => {
+    this.setState({ showPoll });
+  } 
 
   isAuthed() {
     let authed = false
@@ -344,6 +252,7 @@ class App extends React.Component {
     this.setState({ sidebarOpen: !this.state.sidebarOpen })
   }
 
+  
   render() {
     const { location } = this.props
     return (
@@ -402,6 +311,15 @@ class App extends React.Component {
 
           <Route
             exact
+            path="/tutorial"
+            render={() => <PollTutorial response={responseObject}  setshowPoll={setshowPoll}/>}
+          />    
+
+
+
+
+          <Route
+            exact
             path="/legal"
             render={() => <Legal />}
           />
@@ -419,7 +337,7 @@ class App extends React.Component {
           />    
 
           <Route exact path="/404" render={() => <DoesNotExist title={"Page not found"} />} />
-          <RouteOrRedirect path="/c/:conversation_id" isLoading={this.isLoading()} isAuthed={this.isAuthed()} />
+          <RouteOrRedirect path="/c/:conversation_id" isLoading={this.isLoading()} isAuthed={this.isAuthed()} onResponse={this.handleResponse} setShowPoll={this.setShowPoll} />
 
           <Route
             exact

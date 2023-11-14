@@ -12,6 +12,7 @@ import {ResponseObject, Routeprops_tut} from "./PollConsts";
 import PolisNet from "../util/net";
 import TutorialBackground from "./TutorialBackground";
 // import { ToastContainer, toast } from 'react-toastify';
+// import { Snackbar } from '@mui/material';
 
 
 const PollTutorial = ({ response, setshowPoll}) => {
@@ -125,8 +126,8 @@ const PollTutorial = ({ response, setshowPoll}) => {
     const handleTutorialCompletion = (userEmail) => {
       setcurrent_state_progress(current_state_progress+1)
       handleModuleClick(current_state_progress+1, true)
-      console.log("test123123", current_state_index)
-      PolisNet.polisPost('/api/v3/updateTutorialDoneByEmail', { email: userEmail })
+      console.log("test123123", response.user.email)
+      PolisNet.polisPost('/api/v3/updateTutorialDoneByEmail', { email: response.user.email })
         .then(response => {
           if (response.success) {
             console.log('Tutorial updated successfully!', response.result);
