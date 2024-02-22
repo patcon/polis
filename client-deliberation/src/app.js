@@ -40,7 +40,6 @@ import Legal from './components/Legal'
 import Visualization from './components/Visualization'
 import Deliberation from './components/Deliberation'
 import PollTutorial from './components/PollTutorial'
-import Parameter from './components/Parameter'
 import CreateuserPoll from './components/landers/createuserPoll'
 
 const PrivateRoute = ({ component: Component, isLoading, authed, ...rest }) => {
@@ -88,60 +87,40 @@ const isMatch = (conv_id) => {
   });
 };
 
-
-
 const RouteOrRedirect = (props) => {
   const [isConversationExists, setIsConversationExists] = useState(null);
-  const [showPoll, setshowPoll] = useState(false);
   const [responseObject, setResponseObject] = useState({});
-  const { onResponse, setShowPoll, handleRouteProps  } = props; 
-  
-   
+
   useEffect(() => {
-    console.log("I was here")
     isMatch(props.computedMatch.params.conversation_id)
       .then((status) => {
         setResponseObject(status.response)
         setIsConversationExists(status.wasSuccessful)
-        onResponse(status.response); // Use onResponse correctly
-        console.log(onResponse)
       })
       .catch((status) => setIsConversationExists(status.wasSuccessful));
-      console.log("test123", isConversationExists)
-  }, [props.computedMatch.params.conversation_id, onResponse]);
-
-  useEffect(() => {
-    console.log("showpoll gets up", responseObject.user)
-    if(responseObject.user && responseObject.user.tutorialprogress >= 10){
-      console.log(setshowPoll)
-    }
-  }, [responseObject, setShowPoll]);
-  
+  }, [props.computedMatch.params.conversation_id]);
 
   if (isConversationExists === null || props.isLoading) {
     return <Loading />;
   }
-  
+
   return (
     <div>
       {isConversationExists ? (
         <Route
           path={props.path}
-          render={(routeProps) => {
-            // Call handleRouteProps with the current routeProps
-            handleRouteProps(routeProps);
-
-            // Return the component or redirect conditionally
-            if (props.isAuthed) {
-              return showPoll ? 
-                <ConversationUI {...routeProps} response={responseObject}/> :
-                <Redirect to={{ pathname: '/tutorial'}} />;
-            } else {
-              return <Redirect to={{ pathname: '/signin', state: { from: props.location } }} />;
-            }
-          }}
+          render={(routeProps) =>
+            props.isAuthed === true ? (
+              <ConversationUI {...routeProps} response={responseObject}/>
+            ) : (
+              <Redirect
+                to={{ pathname: '/signin', state: { from: props.location } }}
+              />
+            )
+          }
         />
       ) : (
+        // <Redirect to="/404" />
         <DoesNotExist title={"This conversation does not exist."} />
       )}
     </div>
