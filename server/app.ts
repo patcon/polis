@@ -65,6 +65,8 @@ helpersInitialized.then(
       timeout,
       writeDefaultHead,
 
+      handle_GET_gptSummary,
+
       middleware_log_request_body,
       middleware_log_middleware_errors,
       middleware_check_if_options,
@@ -1098,6 +1100,11 @@ helpersInitialized.then(
       // TODO want('lastMetaTime', getInt, assignToP, 0),
       handle_GET_metadata_questions
     );
+
+    app.get("/api/v3/gptSummary",
+    moveToBody,
+    handle_GET_gptSummary
+    )
 
     app.post(
       "/api/v3/metadata/questions",

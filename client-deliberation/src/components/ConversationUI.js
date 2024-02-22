@@ -24,7 +24,7 @@ const ConversationUI = (props) => {
   const description = `You can ask me anything about  ${props.response?.conversation?.topic || 'the description'}`;
 
   useEffect(() => {
-    // gptSummaryAPI("Give me a summary about Halloween");
+    // gptSummaryAPI("Give me a summary about UAMs");
     toggleWidget(); 
     // get_all_comment(); /seems like something is blocking this
     addResponseMessage("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.");
@@ -87,6 +87,21 @@ const ConversationUI = (props) => {
         alert("Error subscribing")
       });
   };
+
+  const gptSummaryAPI = (questionString) => {
+    PolisNet.polisGet("/api/v3/gptSummary", { question: questionString })
+      .then(response => {
+        // Assuming the response is a JSON object and the desired string is in the 'message' property
+        if (response && response.message && typeof response.message === 'string') {
+          addResponseMessage(response.message);
+        } else {
+          console.error('Received non-string message content or invalid response structure');
+        }
+        
+        console.log("GPT response", response)
+      })
+      .fail(err => console.error('Error calling API:', err)); 
+  }
 
   const getSubscribeForm = () => {
     if (props.response.user?.hasOwnProperty("email") ?? false) {
@@ -212,6 +227,7 @@ const ConversationUI = (props) => {
   }
 
   return (
+    <FlexEndContainer>
     <div>
 <Box sx={{ maxWidth: "768px", margin: "auto", py: "20px", px: "10px" }}>
       <HexLogo />
@@ -310,7 +326,7 @@ const ConversationUI = (props) => {
     </div>
     </div>
     
-    
+    </FlexEndContainer>
   );
 };
 

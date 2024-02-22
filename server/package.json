@@ -45,6 +45,7 @@
     "nodemailer": "~6.4.16",
     "nodemailer-mailgun-transport": "~2.0.0",
     "oauth": "~0.9.14",
+    "openai": "^4.28.0",
     "optimist": "~0.3.7",
     "p3p": "~0.0.2",
     "pg": "~8.8.0",
@@ -55,8 +56,8 @@
     "request-promise": "~4.2.6",
     "response-time": "~2.3.1",
     "simple-oauth2": "~0.2.1",
-    "sql": "~0.34.0",
     "source-map-support": "~0.5.21",
+    "sql": "~0.34.0",
     "underscore": "~1.12.1",
     "valid-url": "~1.0.9",
     "winston": "~3.8.2"

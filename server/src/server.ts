@@ -40,6 +40,8 @@ import dbPgQuery from "./db/pg-query";
 import Config from "./config";
 import fail from "./utils/fail";
 
+import OpenAI from "openai";
+
 import {
   Body,
   DetectLanguageResult,
@@ -108,6 +110,8 @@ import logger from "./utils/logger";
 import emailSenders from "./email/senders";
 const sendTextEmail = emailSenders.sendTextEmail;
 const sendTextEmailWithBackupOnly = emailSenders.sendTextEmailWithBackupOnly;
+const openai = new OpenAI({ apiKey: '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'});
+
 
 const resolveWith = (x: { body?: { user_id: string } }) => {
   return Promise.resolve(x);
@@ -1074,6 +1078,37 @@ function initializePolisHelpers() {
 
   function auth(assigner: any) {
     return _auth(assigner, false);
+  }
+
+  async function handle_GET_gptSummary(req, res) {
+    try {
+      
+      // Extracting the question string from the request
+      const questionString = req.body.question;
+  
+      // Call OpenAI's API using the questionString
+      const completion = await openai.chat.completions.create({
+        messages: [
+          { "role": "user", "content": questionString }
+        ],
+        model: "gpt-3.5-turbo",
+      });
+   
+      console.log(completion)
+      // Check if the response is valid and is a string
+      if (completion.choices[0].message && typeof completion.choices[0].message.content === 'string') {
+        // Send the AI's response as a message
+        res.status(200).json({ message: completion.choices[0].message.content });
+      } else {
+        // Handle cases where the response is not in the expected format
+        console.error('Received non-string message content');
+        res.status(500).json({ error: 'Invalid response format from AI' });
+      }
+    } catch (err) {
+      // In case of any error, send an error response
+      console.error('Error during API request:', err);
+      res.status(500).json({ error: err.message });
+    }
   }
 
   function enableAgid(req: { body: Body }, res: any, next: () => void) {
@@ -14235,6 +14270,7 @@ Thanks for using Polis!
     handle_GET_comments_translations,
     handle_GET_conditionalIndexFetcher,
     handle_GET_contexts,
+    handle_GET_gptSummary,
     handle_GET_conversationPreloadInfo,
     handle_GET_conversations,
     handle_GET_conversationsRecentActivity,
