@@ -9,6 +9,9 @@ import HexLogo from "./hexLogo";
 import OpinionContainer from "./OpinionContainer";
 import PolisNet from "../util/net";
 import Visualization from "./Visualization";
+import { Widget, addResponseMessage, toggleWidget } from 'react-chat-widget';
+import 'react-chat-widget/lib/styles.css';
+import styled from 'styled-components';
 
 const ConversationUI = (props) => {
   const conversation_id = props.match.params.conversation_id;
@@ -16,8 +19,21 @@ const ConversationUI = (props) => {
   const [myPid, setMyPid] = useState(props.response.ptpt?.pid ?? "unknownpid");
   const [isSubscribed, setIsSubscribed] = useState(props.response.ptpt?.subscribed ?? false)
   const [emailInputValue, setEmailInputValue] = useState("")
+  const [isLoading, setIsLoading] = useState(false); // Loading state to control request
+  const title = `Summary about ${props.response?.conversation?.topic || 'the topic'}`;
+  const description = `You can ask me anything about  ${props.response?.conversation?.topic || 'the description'}`;
 
-  console.log("route props", props)
+  useEffect(() => {
+    // gptSummaryAPI("Give me a summary about Halloween");
+    toggleWidget(); 
+    // get_all_comment(); /seems like something is blocking this
+    addResponseMessage("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.");
+    
+  
+    console.log("props", props)
+   console.log("Conversation Title + description", props.response.conversation.topic, props.response.conversation.description)
+   console.log("Conversation comments", props.response.nextComment.txt)
+  }, []); // Dependencies array
 
   const vote = (params) => {
     PolisNet.polisPost(
@@ -118,6 +134,72 @@ const ConversationUI = (props) => {
     }
   }
 
+
+  const FlexEndContainer = styled.div`
+  // display: flex;
+  // justify-content: flex-end;
+`;
+  
+
+
+  const StyledWidget = styled.div`
+  .rcw-conversation-container > .rcw-header {
+    background-color: #bf5700	 !important;
+  }
+  .rcw-client .rcw-message-text,
+  .quick-button,
+  .quick-button:active,
+  .rcw-conversation-container .rcw-header,
+  .rcw-full-screen .rcw-close-button,
+  .rcw-launcher {
+      background-color: #bf5700 !important;
+      border-color: #bf5700 !important;
+  }
+  // .rcw-widget-container{
+  //     position: relative !important;
+  // }
+  /* Container holding the widget */
+.chat-widget-container {
+  display: flex;
+  justify-content: flex-end; /* Aligns children (the widget) to the right */
+  position: relative; /* Relative positioning of the container */
+}
+
+/* Style for the chat widget, if needed to adjust within the flex container */
+.rcw-widget-container {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+  // /* Positioning the widget at the bottom right */
+  position: fixed; /* or absolute, depending on your layout */
+  bottom: 0;
+  right: 0;
+  // display: flex !important;
+  // justify-content: flex-end !important;
+  // position: relative !important;
+  // float: right !important;
+  // margin-left: auto !important;; 
+  // margin-right: 0 !important;
+
+  /* Scale up the widget to double its size */
+  transform: scale(0.8);
+  transform-origin: bottom right; /* Ensure scaling happens relative to the bottom right corner */
+
+  .rcw-sender{
+    display: none;
+  }
+  .chat-widget-container {
+    max-height: 90vh; /* Adjust based on your need */
+    overflow-y: auto; /* Allows scrolling within the widget */
+  }
+`;
+
+
+  const handleNewUserMessage = (newMessage) => {
+    // gptSummaryAPI(newMessage)
+  };
+
   const getHasVotedUI = () => {
     return (
       <Fragment>
@@ -129,18 +211,9 @@ const ConversationUI = (props) => {
     )
   }
 
-  // useEffect(() => {
-  //   PolisNet.polisGet("/api/v3/participationInit", {
-  //     conversation_id: conversation_id,
-  //     pid: "mypid",
-  //     lang: "acceptLang",
-  //   }).then((res) => {
-  //     setNextComment(res.nextComment);
-  //   });
-  // }, []);
-
   return (
-    <Box sx={{ maxWidth: "768px", margin: "auto", py: "20px", px: "10px" }}>
+    <div>
+<Box sx={{ maxWidth: "768px", margin: "auto", py: "20px", px: "10px" }}>
       <HexLogo />
       <Title value={props.response.conversation.topic} />
       {props.response.conversation.is_active == false &&
@@ -222,6 +295,22 @@ const ConversationUI = (props) => {
         <HexLogo />
       </Flex>
     </Box>
+    <div>
+    <StyledWidget>
+        <Widget
+          handleNewUserMessage={handleNewUserMessage}
+          title={title}
+          subtitle={description}
+          senderPlaceHolder="Question about the statement?"    
+          resizable={true}
+          emojis={true}
+          
+        />
+      </StyledWidget> 
+    </div>
+    </div>
+    
+    
   );
 };
 
