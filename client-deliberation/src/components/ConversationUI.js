@@ -25,6 +25,16 @@ const ConversationUI = (props) => {
 
   useEffect(() => {
     // gptSummaryAPI("Give me a summary about UAMs");
+    // console.log("gpt function triggerted")
+
+
+    /**
+     * INDEPENDET VARIABLE 1
+     * Provide Citation
+     * The context of providing a citation is applicable to supplementing a summaries with additional information.
+    */
+    handleCitationSummaryGeneration()
+
 
     /**
      * INDEPENDET VARIABLE 3
@@ -33,9 +43,8 @@ const ConversationUI = (props) => {
     */
     toggleWidget(); 
 
-
     // get_all_comment(); /seems like something is blocking this
-    addResponseMessage("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.");
+    // addResponseMessage("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.");
   }, []); // Dependencies array
 
   const vote = (params) => {
@@ -172,6 +181,7 @@ const ConversationUI = (props) => {
   .rcw-launcher {
       background-color: #bf5700 !important;
       border-color: #bf5700 !important;
+     
   }
   // .rcw-widget-container{
   //     position: relative !important;
@@ -182,6 +192,9 @@ const ConversationUI = (props) => {
   justify-content: flex-end; /* Aligns children (the widget) to the right */
   position: relative; /* Relative positioning of the container */
 }
+
+.rcw-message-text {
+  max-width: none; }
 
 /* Style for the chat widget, if needed to adjust within the flex container */
 .rcw-widget-container {
@@ -207,9 +220,9 @@ const ConversationUI = (props) => {
   // INDEPENDET VARIABLE 5
   // Only show summarization window/ also include chat
   // This controls whether the chatbar is visible or not
-  .rcw-sender{
-    display: none;
-  }
+  // .rcw-sender{
+  //   display: none;
+  // }
   .chat-widget-container {
     max-height: 90vh; /* Adjust based on your need */
     overflow-y: auto; /* Allows scrolling within the widget */
@@ -219,6 +232,11 @@ const ConversationUI = (props) => {
 
   const handleNewUserMessage = (newMessage) => {
     gptSummaryAPI(newMessage)
+  };
+
+  const handleCitationSummaryGeneration = () => {
+    const citationSummaryPrompt = "Please summarize" + props.response.conversation.topic + props.response.conversation.description + ". Important: Please provide links scientific resources about the information you will give me. Please highlight the links through markup annotation."
+    gptSummaryAPI(citationSummaryPrompt)
   };
 
   const getHasVotedUI = () => {

@@ -110,7 +110,7 @@ import logger from "./utils/logger";
 import emailSenders from "./email/senders";
 const sendTextEmail = emailSenders.sendTextEmail;
 const sendTextEmailWithBackupOnly = emailSenders.sendTextEmailWithBackupOnly;
-const openai = new OpenAI({ apiKey: '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'});
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });  
 
 
 const resolveWith = (x: { body?: { user_id: string } }) => {
@@ -1086,10 +1086,12 @@ function initializePolisHelpers() {
       // Extracting the question string from the request
       const questionString = req.body.question;
   
-      // Call OpenAI's API using the questionString
+
       const completion = await openai.chat.completions.create({
         messages: [
-          { "role": "user", "content": questionString }
+          {"role": "system", "content": "You are a helpful assistant."},
+          { "role": "user", "content": questionString },
+          
         ],
         model: "gpt-3.5-turbo",
       });
@@ -1110,7 +1112,6 @@ function initializePolisHelpers() {
       res.status(500).json({ error: err.message });
     }
   }
-
   function enableAgid(req: { body: Body }, res: any, next: () => void) {
     req.body.agid = 1;
     next();
