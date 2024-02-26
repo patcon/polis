@@ -25,14 +25,17 @@ const ConversationUI = (props) => {
 
   useEffect(() => {
     // gptSummaryAPI("Give me a summary about UAMs");
+
+    /**
+     * INDEPENDET VARIABLE 3
+     * Participant-initiated / automatically-initiated
+     * The decision to make summarization participant-initiated versus automatically-initiated can impact user engagement and the relevance of the summaries produced.
+    */
     toggleWidget(); 
+
+
     // get_all_comment(); /seems like something is blocking this
     addResponseMessage("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.");
-    
-  
-    console.log("props", props)
-   console.log("Conversation Title + description", props.response.conversation.topic, props.response.conversation.description)
-   console.log("Conversation comments", props.response.nextComment.txt)
   }, []); // Dependencies array
 
   const vote = (params) => {
@@ -91,7 +94,7 @@ const ConversationUI = (props) => {
   const gptSummaryAPI = (questionString) => {
     PolisNet.polisGet("/api/v3/gptSummary", { question: questionString })
       .then(response => {
-        // Assuming the response is a JSON object and the desired string is in the 'message' property
+        
         if (response && response.message && typeof response.message === 'string') {
           addResponseMessage(response.message);
         } else {
@@ -201,6 +204,9 @@ const ConversationUI = (props) => {
   transform: scale(0.8);
   transform-origin: bottom right; /* Ensure scaling happens relative to the bottom right corner */
 
+  // INDEPENDET VARIABLE 5
+  // Only show summarization window/ also include chat
+  // This controls whether the chatbar is visible or not
   .rcw-sender{
     display: none;
   }
@@ -212,7 +218,7 @@ const ConversationUI = (props) => {
 
 
   const handleNewUserMessage = (newMessage) => {
-    // gptSummaryAPI(newMessage)
+    gptSummaryAPI(newMessage)
   };
 
   const getHasVotedUI = () => {
