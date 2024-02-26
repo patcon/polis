@@ -26,14 +26,21 @@ const ConversationUI = (props) => {
   useEffect(() => {
     // gptSummaryAPI("Give me a summary about UAMs");
     // console.log("gpt function triggerted")
-
+    
 
     /**
      * INDEPENDET VARIABLE 1
      * Provide Citation
      * The context of providing a citation is applicable to supplementing a summaries with additional information.
     */
-    handleCitationSummaryGeneration()
+    // handleCitationSummaryGeneration()
+
+    /**
+     * INDEPENDET VARIABLE 2
+     * Simple Language
+     * The use of simplified language versus standard language in summaries can affect comprehensibility and accessibility for diverse audiences.
+    */
+    handleSimpleLanguageSummaryGeneration()
 
 
     /**
@@ -239,6 +246,14 @@ const ConversationUI = (props) => {
     gptSummaryAPI(citationSummaryPrompt)
   };
 
+  const handleSimpleLanguageSummaryGeneration = () => {
+    // with younger age the summarisation is shorter
+    // I would say it is not particularly different in language
+    const age = "16-year-old"
+    const SimpleLanguageSummaryPrompt = "Please summarize" + props.response.conversation.topic + props.response.conversation.description + ". Please explain in simple language, don't use abstract terms adn explain as if I was a " + age + "person."
+    gptSummaryAPI(SimpleLanguageSummaryPrompt)
+  };
+
   const getHasVotedUI = () => {
     return (
       <Fragment>
@@ -342,7 +357,7 @@ const ConversationUI = (props) => {
           title={title}
           subtitle={description}
           senderPlaceHolder="Question about the statement?"    
-          resizable={true}
+          // resizable={true}
           emojis={true}
           
         />
