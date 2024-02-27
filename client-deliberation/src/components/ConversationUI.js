@@ -40,7 +40,7 @@ const ConversationUI = (props) => {
      * Simple Language
      * The use of simplified language versus standard language in summaries can affect comprehensibility and accessibility for diverse audiences.
     */
-    handleSimpleLanguageSummaryGeneration()
+    // handleSimpleLanguageSummaryGeneration()
 
 
     /**
@@ -50,10 +50,24 @@ const ConversationUI = (props) => {
     */
     toggleWidget(); 
 
-    // get_all_comment(); /seems like something is blocking this
-    // addResponseMessage("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.");
+    /**
+     * INDEPENDET VARIABLE 4
+     * Poll Summary
+     * The entire poll is summarized, including the comments and the poll results.
+    */
+    handlePollSummaryGeneration()
+   
   }, []); // Dependencies array
 
+
+  function extractDataFromString(inputString) {
+    try {
+      let jsonObj = JSON.parse(inputString);
+      return(jsonObj)
+    } catch (e) {
+      console.error("Parsing error:", e);
+    }
+  }
   const vote = (params) => {
     PolisNet.polisPost(
       "/api/v3/votes",
@@ -254,6 +268,46 @@ const ConversationUI = (props) => {
     gptSummaryAPI(SimpleLanguageSummaryPrompt)
   };
 
+  const handlePollSummaryGeneration = () => {
+    fetchComments().then((res) => {
+      const mappedData = res.map(item => ({
+        txt: item?.txt, 
+        tid: item?.tid,
+    }));
+
+
+    const mappedDataString = JSON.stringify(mappedData);
+    
+    const poll = extractDataFromString(props.response.pca);
+    
+    const groupAwareConsensusString = JSON.stringify(poll['group-aware-consensus']);
+    const repnessString = JSON.stringify(poll.repness);
+
+    const pollSummarization = "The topic is Summary about" +  props.response.conversation.topic + "Use Cases for Unmanned Aerial Mobility (UAM). The graph in the picture was made by voting on the following statements with true or false" + mappedDataString + "group-aware-consensus" + groupAwareConsensusString +  "repness: " +  repnessString + "Please try to make sense about what the values say about the comments. Please interpret if the people agree with the statement or not and what the overall mood of the topic is. Please make it into one paragraph and don't directly tell which statements they have."
+    gptSummaryAPI(pollSummarization)
+  
+    })
+  };
+
+  const handleCommentSummaryGeneration = () => {
+    fetchComments().then((res) => {
+      const CommentSummaryPrompt = "Please summarize the discussion" + props.response.conversation.topic + "These are the discussion statements" + res + props.response.conversation.description  + "Determine the primary arguments or viewpoints from the discussion." + "Identify any common themes or points of agreement among the comments." + "Please let this summary offer a comprehensive overview of the discussion, enabling readers to quickly understand the key topics and the spectrum of views presented."
+      gptSummaryAPI(CommentSummaryPrompt)
+  
+    })
+  };
+
+  const fetchComments = () => {
+    return PolisNet.polisGet("/api/v3/comments", {
+      conversation_id: conversation_id,
+      include_social: true,
+    })
+
+  }
+
+
+
+
   const getHasVotedUI = () => {
     return (
       <Fragment>
@@ -351,6 +405,7 @@ const ConversationUI = (props) => {
       </Flex>
     </Box>
     <div>
+      
     <StyledWidget>
         <Widget
           handleNewUserMessage={handleNewUserMessage}
