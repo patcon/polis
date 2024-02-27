@@ -55,7 +55,14 @@ const ConversationUI = (props) => {
      * Poll Summary
      * The entire poll is summarized, including the comments and the poll results.
     */
-    handlePollSummaryGeneration()
+    // handlePollSummaryGeneration()
+
+    /**
+     * INDEPENDET VARIABLE 4
+     * Poll Summary
+     * The entire poll is summarized, including the comments and the poll results.
+     */
+        handleDiscussionSummaryGeneration()
    
   }, []); // Dependencies array
 
@@ -262,7 +269,6 @@ const ConversationUI = (props) => {
 
   const handleSimpleLanguageSummaryGeneration = () => {
     // with younger age the summarisation is shorter
-    // I would say it is not particularly different in language
     const age = "16-year-old"
     const SimpleLanguageSummaryPrompt = "Please summarize" + props.response.conversation.topic + props.response.conversation.description + ". Please explain in simple language, don't use abstract terms adn explain as if I was a " + age + "person."
     gptSummaryAPI(SimpleLanguageSummaryPrompt)
@@ -283,7 +289,22 @@ const ConversationUI = (props) => {
     const groupAwareConsensusString = JSON.stringify(poll['group-aware-consensus']);
     const repnessString = JSON.stringify(poll.repness);
 
-    const pollSummarization = "The topic is Summary about" +  props.response.conversation.topic + "Use Cases for Unmanned Aerial Mobility (UAM). The graph in the picture was made by voting on the following statements with true or false" + mappedDataString + "group-aware-consensus" + groupAwareConsensusString +  "repness: " +  repnessString + "Please try to make sense about what the values say about the comments. Please interpret if the people agree with the statement or not and what the overall mood of the topic is. Please make it into one paragraph and don't directly tell which statements they have."
+    const pollSummarization = "The topic is Summary about" +  props.response.conversation.topic + ". The graph in the discussion was made by voting on the following statements with true or false" + mappedDataString + "group-aware-consensus" + groupAwareConsensusString +  "repness: " +  repnessString + "Please try to make sense about what the values say about the comments. Please interpret if the people agree with the statement or not and what the overall mood of the topic is. Please make it into one paragraph and don't directly tell which statements they have."
+    gptSummaryAPI(pollSummarization)
+  
+    })
+  };
+
+
+  const handleDiscussionSummaryGeneration = () => {
+    fetchComments().then((res) => {
+      const mappedData = res.map(item => ({
+        txt: item?.txt, 
+        tid: item?.tid,
+    }));
+
+
+    const pollSummarization = "The topic is Summary about" +  props.response.conversation.topic + " The discussion in the discussion was made by voting on the following statements with true or false" + mappedDataString + "group-aware-consensus" + groupAwareConsensusString +  "repness: " +  repnessString + "Please try to make sense about what the values say about the comments. Please interpret if the people agree with the statement or not and what the overall mood of the topic is. Please make it into one paragraph and don't directly tell which statements they have."
     gptSummaryAPI(pollSummarization)
   
     })
@@ -291,7 +312,7 @@ const ConversationUI = (props) => {
 
   const handleCommentSummaryGeneration = () => {
     fetchComments().then((res) => {
-      const CommentSummaryPrompt = "Please summarize the discussion" + props.response.conversation.topic + "These are the discussion statements" + res + props.response.conversation.description  + "Determine the primary arguments or viewpoints from the discussion." + "Identify any common themes or points of agreement among the comments." + "Please let this summary offer a comprehensive overview of the discussion, enabling readers to quickly understand the key topics and the spectrum of views presented."
+      const CommentSummaryPrompt = "Please summarize the discussion" + props.response.conversation.topic + "These are the discussion statements" + res + props.response.conversation.description 
       gptSummaryAPI(CommentSummaryPrompt)
   
     })
