@@ -22,6 +22,8 @@ const ConversationUI = (props) => {
   const [isLoading, setIsLoading] = useState(false); // Loading state to control request
   const title = `Summary about ${props.response?.conversation?.topic || 'the topic'}`;
   const description = `You can ask me anything about  ${props.response?.conversation?.topic || 'the description'}`;
+  const [extractedTopics, setExtractedTopics] = useState([]);
+
 
   useEffect(() => {
     // gptSummaryAPI("Give me a summary about UAMs");
@@ -55,14 +57,14 @@ const ConversationUI = (props) => {
      * Poll Summary
      * The entire poll is summarized, including the comments and the poll results.
     */
-     handlePollSummaryGeneration()
+    //  handlePollSummaryGeneration()
 
     /**
      * INDEPENDET VARIABLE 4
      * Discussion Summary
      * The entire discussion is summarized, including the comments.
      */
-    // handleDiscussionSummaryGeneration()
+    handleDiscussionSummaryGeneration()
 
   }, []); // Dependencies array
 
@@ -143,6 +145,23 @@ const ConversationUI = (props) => {
       .fail(err => console.error('Error calling API:', err));
   }
 
+  const gptSummaryAPI_console = (questionString) => {
+    PolisNet.polisGet("/api/v3/gptSummarytree", { question: questionString })
+      .then(response => {
+        if (response && response.message && typeof response.message === 'string') {
+          const topics = response.message.match(/\[([^\]]+)\]/g); // Extract topics between brackets
+          if (topics && topics.length > 0) {
+            const cleanedTopics = topics.map(topic => topic.slice(1, -1).trim()); // Remove brackets and trim
+            setExtractedTopics(cleanedTopics);
+          }
+        } else {
+          console.error('Received non-string message content or invalid response structure');
+        }
+      })
+      .fail(err => console.error('Error calling API:', err));
+  };
+  
+
   const getSubscribeForm = () => {
     if (props.response.user?.hasOwnProperty("email") ?? false) {
       <form>
@@ -195,7 +214,10 @@ const ConversationUI = (props) => {
   // justify-content: flex-end;
 `;
 
-
+const button = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
 
   const StyledWidget = styled.div`
   .rcw-conversation-container > .rcw-header {
@@ -301,28 +323,45 @@ const ConversationUI = (props) => {
 
 
   const handleDiscussionSummaryGeneration = () => {
+    console.log("I was here 1")
     fetchComments().then((res) => {
+      console.log("I was here 2")
       const mappedData = res.map(item => ({
         txt: item?.txt,
         tid: item?.tid,
       }));
 
+      const mappedDataString = JSON.stringify(mappedData);
 
-      const pollSummarization = "The topic is Summary about" + props.response.conversation.topic + " The discussion in the discussion was made by voting on the following statements with true or false" + mappedDataString + "group-aware-consensus" + groupAwareConsensusString + "repness: " + repnessString + "Please try to make sense about what the values say about the comments. Please interpret if the people agree with the statement or not and what the overall mood of the topic is. Please make it into one paragraph and don't directly tell which statements they have."
-      gptSummaryAPI(pollSummarization)
-
+      console.log("I was here 3")
+      const CommentSummaryPrompt = "Please summarize the discussion" + props.response.conversation.topic + "These are the discussion statements" + mappedDataString + props.response.conversation.description + "Determine the primary arguments or viewpoints from the discussion." + "Identify any common themes or points of agreement among the comments." + "This summary will offer a comprehensive overview of the discussion, enabling readers to quickly understand the key topics and the spectrum of views presented." 
+      gptSummaryAPI(CommentSummaryPrompt)
+      console.log("I was here 4")
+      const furtherInformation = "This is the discussion" + props.response.conversation.topic + "These are the discussion statements" + mappedDataString + props.response.conversation.description + "Please identify the three main topics of the discussion. Please provide them in the following schema [topic1] [topic2] [topic3]."
+      // console.log("furtherinformation", furtherInformation)
+      gptSummaryAPI_console(furtherInformation)
     })
   };
 
   const handleCommentSummaryGeneration = () => {
     fetchComments().then((res) => {
-      const CommentSummaryPrompt = "Please summarize the discussion" + props.response.conversation.topic + "These are the discussion statements" + res + props.response.conversation.description + "Determine the primary arguments or viewpoints from the discussion." + "Identify any common themes or points of agreement among the comments." + "This summary will offer a comprehensive overview of the discussion, enabling readers to quickly understand the key topics and the spectrum of views presented." +
-        gptSummaryAPI(CommentSummaryPrompt)
-      const furtherInformation = "This is the discussion" + props.response.conversation.topic + "These are the discussion statements" + res + props.response.conversation.description + "Please identify the three main topics of the discussion. Please provide them in the following schema [topic1], [topic2], [topic3]."
-      gptSummaryAPI(furtherInformation)
+      const CommentSummaryPrompt = "Please summarize the discussion" + props.response.conversation.topic + "These are the discussion statements" + res + props.response.conversation.description + "Determine the primary arguments or viewpoints from the discussion." + "Identify any common themes or points of agreement among the comments." + "This summary will offer a comprehensive overview of the discussion, enabling readers to quickly understand the key topics and the spectrum of views presented." 
+        // gptSummaryAPI(CommentSummaryPrompt)
+      const furtherInformation = "This is the discussion" + props.response.conversation.topic + "These are the discussion statements" + res + props.response.conversation.description + "Please identify the three main topics of the discussion. Please provide them in the following schema [topic1] [topic2] [topic3]."
+      console.log("furtherinformation", res)
+      // gptSummaryAPI_console(furtherInformation)
       // make the further topics clickable
     })
   };
+
+  const log_button_content = (buttonName) => {
+    const CommentSummaryPrompt = "Please summarize the discussion" + props.response.conversation.topic + "This is the main topic of discussion: " + buttonName + "Determine the primary arguments or viewpoints from the discussion." + "Identify any common themes or points of agreement among the comments." + "This summary will offer a comprehensive overview of the discussion, enabling readers to quickly understand the key topics and the spectrum of views presented." 
+        gptSummaryAPI(CommentSummaryPrompt)
+    const furtherInformation = "This is the discussion" + props.response.conversation.topic + "This is the main topic of discussion: " + buttonName + "Please identify the three main topics of the discussion. Please provide them in the following schema [topic1] [topic2] [topic3]."
+    // console.log("furtherinformation", furtherInformation)
+    gptSummaryAPI_console(furtherInformation)
+  };
+  
 
   const fetchComments = () => {
     return PolisNet.polisGet("/api/v3/comments", {
@@ -434,6 +473,26 @@ const ConversationUI = (props) => {
         <div>
 
           <StyledWidget>
+          {/* <div>
+          {extractedTopics.map((topic, index) => (
+            <div key={index}>
+              <button>{topic}</button>
+            </div>
+          ))}
+        </div> */}
+        <div>
+        {extractedTopics.map((topic, index) => {
+          const buttonName = `Button ${index + 1}: ${topic}`; // Customize this as needed
+          return (
+            <button key={index} onClick={() => log_button_content(buttonName)}>
+              {buttonName}
+            </button>
+          );
+        })}
+      </div>
+
+
+          
             <Widget
               handleNewUserMessage={handleNewUserMessage}
               title={title}

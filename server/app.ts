@@ -66,6 +66,7 @@ helpersInitialized.then(
       writeDefaultHead,
 
       handle_GET_gptSummary,
+      handle_GET_gptSummary_tree,
 
       middleware_log_request_body,
       middleware_log_middleware_errors,
@@ -1104,6 +1105,12 @@ helpersInitialized.then(
     app.get("/api/v3/gptSummary",
     moveToBody,
     handle_GET_gptSummary
+    )
+
+    
+    app.get("/api/v3/gptSummarytree",
+    moveToBody,
+    handle_GET_gptSummary_tree
     )
 
     app.post(
