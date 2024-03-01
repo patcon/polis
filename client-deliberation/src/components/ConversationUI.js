@@ -26,7 +26,7 @@ const ConversationUI = (props) => {
   useEffect(() => {
     // gptSummaryAPI("Give me a summary about UAMs");
     // console.log("gpt function triggerted")
-    
+
 
     /**
      * INDEPENDET VARIABLE 1
@@ -48,29 +48,29 @@ const ConversationUI = (props) => {
      * Participant-initiated / automatically-initiated
      * The decision to make summarization participant-initiated versus automatically-initiated can impact user engagement and the relevance of the summaries produced.
     */
-    toggleWidget(); 
+    toggleWidget();
 
     /**
      * INDEPENDET VARIABLE 4
      * Poll Summary
      * The entire poll is summarized, including the comments and the poll results.
     */
-    // handlePollSummaryGeneration()
+     handlePollSummaryGeneration()
 
     /**
      * INDEPENDET VARIABLE 4
-     * Poll Summary
-     * The entire poll is summarized, including the comments and the poll results.
+     * Discussion Summary
+     * The entire discussion is summarized, including the comments.
      */
-        handleDiscussionSummaryGeneration()
-   
+    // handleDiscussionSummaryGeneration()
+
   }, []); // Dependencies array
 
 
   function extractDataFromString(inputString) {
     try {
       let jsonObj = JSON.parse(inputString);
-      return(jsonObj)
+      return (jsonObj)
     } catch (e) {
       console.error("Parsing error:", e);
     }
@@ -131,16 +131,16 @@ const ConversationUI = (props) => {
   const gptSummaryAPI = (questionString) => {
     PolisNet.polisGet("/api/v3/gptSummary", { question: questionString })
       .then(response => {
-        
+
         if (response && response.message && typeof response.message === 'string') {
           addResponseMessage(response.message);
         } else {
           console.error('Received non-string message content or invalid response structure');
         }
-        
+
         console.log("GPT response", response)
       })
-      .fail(err => console.error('Error calling API:', err)); 
+      .fail(err => console.error('Error calling API:', err));
   }
 
   const getSubscribeForm = () => {
@@ -194,7 +194,7 @@ const ConversationUI = (props) => {
   // display: flex;
   // justify-content: flex-end;
 `;
-  
+
 
 
   const StyledWidget = styled.div`
@@ -277,21 +277,25 @@ const ConversationUI = (props) => {
   const handlePollSummaryGeneration = () => {
     fetchComments().then((res) => {
       const mappedData = res.map(item => ({
-        txt: item?.txt, 
+        txt: item?.txt,
         tid: item?.tid,
-    }));
+      }));
 
 
-    const mappedDataString = JSON.stringify(mappedData);
-    
-    const poll = extractDataFromString(props.response.pca);
-    
-    const groupAwareConsensusString = JSON.stringify(poll['group-aware-consensus']);
-    const repnessString = JSON.stringify(poll.repness);
+      const mappedDataString = JSON.stringify(mappedData);
 
-    const pollSummarization = "The topic is Summary about" +  props.response.conversation.topic + ". The graph in the discussion was made by voting on the following statements with true or false" + mappedDataString + "group-aware-consensus" + groupAwareConsensusString +  "repness: " +  repnessString + "Please try to make sense about what the values say about the comments. Please interpret if the people agree with the statement or not and what the overall mood of the topic is. Please make it into one paragraph and don't directly tell which statements they have."
-    gptSummaryAPI(pollSummarization)
-  
+      const poll = extractDataFromString(props.response.pca);
+
+      const groupAwareConsensusString = JSON.stringify(poll['group-aware-consensus']);
+      const repnessString = JSON.stringify(poll.repness);
+      console.log("repnessString", poll)
+
+      const pollSummarization = "The topic is Summary about" + props.response.conversation.topic + ". The graph in the discussion was made by voting on the following statements with true or false" 
+      + mappedDataString + "group-aware-consensus" + groupAwareConsensusString + "repness: " + repnessString + 
+      "Please try to make sense about what the values say about the comments. Please interpret if the people agree with the statement or not and what the overall mood of the topic is. " + 
+      "Please make it into one paragraph and don't directly tell which statements they have."
+      gptSummaryAPI(pollSummarization)
+
     })
   };
 
@@ -299,22 +303,24 @@ const ConversationUI = (props) => {
   const handleDiscussionSummaryGeneration = () => {
     fetchComments().then((res) => {
       const mappedData = res.map(item => ({
-        txt: item?.txt, 
+        txt: item?.txt,
         tid: item?.tid,
-    }));
+      }));
 
 
-    const pollSummarization = "The topic is Summary about" +  props.response.conversation.topic + " The discussion in the discussion was made by voting on the following statements with true or false" + mappedDataString + "group-aware-consensus" + groupAwareConsensusString +  "repness: " +  repnessString + "Please try to make sense about what the values say about the comments. Please interpret if the people agree with the statement or not and what the overall mood of the topic is. Please make it into one paragraph and don't directly tell which statements they have."
-    gptSummaryAPI(pollSummarization)
-  
+      const pollSummarization = "The topic is Summary about" + props.response.conversation.topic + " The discussion in the discussion was made by voting on the following statements with true or false" + mappedDataString + "group-aware-consensus" + groupAwareConsensusString + "repness: " + repnessString + "Please try to make sense about what the values say about the comments. Please interpret if the people agree with the statement or not and what the overall mood of the topic is. Please make it into one paragraph and don't directly tell which statements they have."
+      gptSummaryAPI(pollSummarization)
+
     })
   };
 
   const handleCommentSummaryGeneration = () => {
     fetchComments().then((res) => {
-      const CommentSummaryPrompt = "Please summarize the discussion" + props.response.conversation.topic + "These are the discussion statements" + res + props.response.conversation.description 
-      gptSummaryAPI(CommentSummaryPrompt)
-  
+      const CommentSummaryPrompt = "Please summarize the discussion" + props.response.conversation.topic + "These are the discussion statements" + res + props.response.conversation.description + "Determine the primary arguments or viewpoints from the discussion." + "Identify any common themes or points of agreement among the comments." + "This summary will offer a comprehensive overview of the discussion, enabling readers to quickly understand the key topics and the spectrum of views presented." +
+        gptSummaryAPI(CommentSummaryPrompt)
+      const furtherInformation = "This is the discussion" + props.response.conversation.topic + "These are the discussion statements" + res + props.response.conversation.description + "Please identify the three main topics of the discussion. Please provide them in the following schema [topic1], [topic2], [topic3]."
+      gptSummaryAPI(furtherInformation)
+      // make the further topics clickable
     })
   };
 
@@ -342,105 +348,105 @@ const ConversationUI = (props) => {
 
   return (
     <FlexEndContainer>
-    <div>
-<Box sx={{ maxWidth: "768px", margin: "auto", py: "20px", px: "10px" }}>
-      <HexLogo />
-      <Title value={props.response.conversation.topic} />
-      {props.response.conversation.is_active == false &&
-        <Box
-          sx={{
-            display: "inline-block",
-            bg: "#cf152a",
-            borderRadius: "5px",
-            padding: "5px",
-          }}
-        >
-          <Text sx={{ color: "white" }}>closed</Text>
-        </Box>
-      }
-      <Subtitle value={props.response.conversation.description} />
-      {props.response.conversation.is_active == true &&
-        <Box>
-          {props.response.conversation.help_type !== 0 &&
-            <Text variant="conversationPage" sx={{ mb: [2] }}>
-              Welcome to a new kind of conversation - vote on other people's statements.
-            </Text>
+      <div>
+        <Box sx={{ maxWidth: "768px", margin: "auto", py: "20px", px: "10px" }}>
+          <HexLogo />
+          <Title value={props.response.conversation.topic} />
+          {props.response.conversation.is_active == false &&
+            <Box
+              sx={{
+                display: "inline-block",
+                bg: "#cf152a",
+                borderRadius: "5px",
+                padding: "5px",
+              }}
+            >
+              <Text sx={{ color: "white" }}>closed</Text>
+            </Box>
           }
-          <StatementUIContainer>
-            {typeof nextComment !== "undefined" && nextComment.hasOwnProperty("tid") ? (
-              <StatementUI
-                author="Anonymous"
-                numStatementsRemaining={nextComment.remaining}
-                statement={nextComment.txt}
-                vote={vote}
-              />
-            ) : typeof nextComment !== "undefined" && nextComment.hasOwnProperty("currentPid") ? (
-              getHasVotedUI()
-            ) : (
-              <Text>
-                There aren't any statements yet. Get this conversation started by adding a statement.
-              </Text>
-            )}
-          </StatementUIContainer>
-          {props.response.conversation.write_type !== 0 &&
-            <Fragment>
+          <Subtitle value={props.response.conversation.description} />
+          {props.response.conversation.is_active == true &&
+            <Box>
               {props.response.conversation.help_type !== 0 &&
-                <Box>
-                  <Text variant="conversationPage" sx={{ mb: [3] }}>
-                    Are your perspectives or experiences missing from the conversation? If so, add them in the
-                    box below.
-                  </Text>
-                  <Text variant="conversationPage">What makes a good statement?</Text>
-                  <Text variant="conversationPage">
-                    <ul>
-                      <li>Stand alone idea</li>
-                      <li>Raise new perspectives, experiences or issues</li>
-                      <li>Clear & concise (limited to 140 characters)</li>
-                    </ul>
-                  </Text>
-                  <Text variant="conversationPage" sx={{ mb: [3] }}>
-                    Please remember, statements are displayed randomly and you are not replying directly to
-                    other participants' statements.
-                  </Text>
-                </Box>
+                <Text variant="conversationPage" sx={{ mb: [2] }}>
+                  Welcome to a new kind of conversation - vote on other people's statements.
+                </Text>
               }
-              <StatementForm conversation_id={conversation_id} processPidResponse={processPidResponse} />
-            </Fragment>
+              <StatementUIContainer>
+                {typeof nextComment !== "undefined" && nextComment.hasOwnProperty("tid") ? (
+                  <StatementUI
+                    author="Anonymous"
+                    numStatementsRemaining={nextComment.remaining}
+                    statement={nextComment.txt}
+                    vote={vote}
+                  />
+                ) : typeof nextComment !== "undefined" && nextComment.hasOwnProperty("currentPid") ? (
+                  getHasVotedUI()
+                ) : (
+                  <Text>
+                    There aren't any statements yet. Get this conversation started by adding a statement.
+                  </Text>
+                )}
+              </StatementUIContainer>
+              {props.response.conversation.write_type !== 0 &&
+                <Fragment>
+                  {props.response.conversation.help_type !== 0 &&
+                    <Box>
+                      <Text variant="conversationPage" sx={{ mb: [3] }}>
+                        Are your perspectives or experiences missing from the conversation? If so, add them in the
+                        box below.
+                      </Text>
+                      <Text variant="conversationPage">What makes a good statement?</Text>
+                      <Text variant="conversationPage">
+                        <ul>
+                          <li>Stand alone idea</li>
+                          <li>Raise new perspectives, experiences or issues</li>
+                          <li>Clear & concise (limited to 140 characters)</li>
+                        </ul>
+                      </Text>
+                      <Text variant="conversationPage" sx={{ mb: [3] }}>
+                        Please remember, statements are displayed randomly and you are not replying directly to
+                        other participants' statements.
+                      </Text>
+                    </Box>
+                  }
+                  <StatementForm conversation_id={conversation_id} processPidResponse={processPidResponse} />
+                </Fragment>
+              }
+            </Box>
           }
+          {props.response.conversation.vis_type !== 0 && (
+            <Fragment>
+              <Box sx={{ mb: [3] }}>
+                <OpinionContainer showHelperText={props.response.conversation.help_type} />
+              </Box>
+              <Box sx={{ mb: [5] }}>
+                <Visualization myPid={myPid} conversation_id={conversation_id} />
+              </Box>
+            </Fragment>
+          )
+          }
+          <Flex sx={{ justifyContent: "center" }}>
+            {/* TODO: enlarge */}
+            <HexLogo />
+          </Flex>
         </Box>
-      }
-      {props.response.conversation.vis_type !== 0 && (
-        <Fragment>
-          <Box sx={{ mb: [3] }}>
-            <OpinionContainer showHelperText={props.response.conversation.help_type} />
-          </Box>
-          <Box sx={{ mb: [5] }}>
-            <Visualization myPid={myPid} conversation_id={conversation_id} />
-          </Box>
-        </Fragment>
-      )
-      }
-      <Flex sx={{ justifyContent: "center" }}>
-        {/* TODO: enlarge */}
-        <HexLogo />
-      </Flex>
-    </Box>
-    <div>
-      
-    <StyledWidget>
-        <Widget
-          handleNewUserMessage={handleNewUserMessage}
-          title={title}
-          subtitle={description}
-          senderPlaceHolder="Question about the statement?"    
-          // resizable={true}
-          emojis={true}
-          
-        />
-      </StyledWidget> 
-    </div>
-    </div>
-    
+        <div>
+
+          <StyledWidget>
+            <Widget
+              handleNewUserMessage={handleNewUserMessage}
+              title={title}
+              subtitle={description}
+              senderPlaceHolder="Question about the statement?"
+              // resizable={true}
+              emojis={true}
+
+            />
+          </StyledWidget>
+        </div>
+      </div>
+
     </FlexEndContainer>
   );
 };
