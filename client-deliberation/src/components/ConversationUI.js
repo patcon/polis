@@ -9,9 +9,10 @@ import HexLogo from "./hexLogo";
 import OpinionContainer from "./OpinionContainer";
 import PolisNet from "../util/net";
 import Visualization from "./Visualization";
-import { Widget, addResponseMessage, toggleWidget } from 'react-chat-widget';
+import { Widget, addResponseMessage, toggleWidget, setQuickButtons } from 'react-chat-widget';
 import 'react-chat-widget/lib/styles.css';
 import styled from 'styled-components';
+import TreeSummary from "./TreeSummary";
 
 const ConversationUI = (props) => {
   const conversation_id = props.match.params.conversation_id;
@@ -22,7 +23,11 @@ const ConversationUI = (props) => {
   const [isLoading, setIsLoading] = useState(false); // Loading state to control request
   const title = `Summary about ${props.response?.conversation?.topic || 'the topic'}`;
   const description = `You can ask me anything about  ${props.response?.conversation?.topic || 'the description'}`;
-  const [extractedTopics, setExtractedTopics] = useState([]);
+  const [extractedTopics, setExtractedTopics] = useState(['', '', '']);
+  const [showTreeSummary, setShowTreeSummary] = useState(false);
+  const [topicsHistory, setTopicsHistory] = useState([]);
+
+
 
 
   useEffect(() => {
@@ -54,10 +59,10 @@ const ConversationUI = (props) => {
 
     /**
      * INDEPENDET VARIABLE 4
-     * Poll Summary
-     * The entire poll is summarized, including the comments and the poll results.
+     * Graph Summary
+     * The entire Graph is summarized, including the comments and the Graph results.
     */
-    //  handlePollSummaryGeneration()
+    // handleGraphsummaryGeneration()
 
     /**
      * INDEPENDET VARIABLE 4
@@ -66,6 +71,7 @@ const ConversationUI = (props) => {
      */
     handleDiscussionSummaryGeneration()
 
+   
   }, []); // Dependencies array
 
 
@@ -153,6 +159,8 @@ const ConversationUI = (props) => {
           if (topics && topics.length > 0) {
             const cleanedTopics = topics.map(topic => topic.slice(1, -1).trim()); // Remove brackets and trim
             setExtractedTopics(cleanedTopics);
+            setTopicsHistory((prevHistory) => [...prevHistory, cleanedTopics]);
+            setShowTreeSummary(true); 
           }
         } else {
           console.error('Received non-string message content or invalid response structure');
@@ -208,6 +216,12 @@ const ConversationUI = (props) => {
     }
   }
 
+  // const updateTopicsAndHistory = (newTopics) => {
+  //   setTopicsHistory((prevHistory) => [...prevHistory, newTopics]);
+  //   setExtractedTopics(newTopics);
+  // };
+  
+
 
   const FlexEndContainer = styled.div`
   // display: flex;
@@ -219,6 +233,73 @@ const button = styled.div`
   justify-content: flex-end;
 `;
 
+const WidgetContainer = styled.div`
+  display: flex;
+  flex-direction: column; // Stack them vertically
+  align-items: flex-end; // Align to the right
+  gap: 20px; // Space between components
+`;
+
+const StyledWidgetTree = styled.div`
+.rcw-conversation-container > .rcw-header {
+  background-color: #bf5700	 !important;
+}
+.rcw-client .rcw-message-text,
+.quick-button,
+.quick-button:active,
+.rcw-conversation-container .rcw-header,
+.rcw-full-screen .rcw-close-button,
+.rcw-launcher {
+    background-color: #bf5700 !important;
+    border-color: #bf5700 !important;
+   
+}
+
+// .rcw-widget-container{
+//     position: relative !important;
+// }
+/* Container holding the widget */
+.chat-widget-container {
+display: flex;
+justify-content: flex-end; /* Aligns children (the widget) to the right */
+position: relative; /* Relative positioning of the container */
+}
+
+.rcw-message-text {
+max-width: none; }
+
+/* Style for the chat widget, if needed to adjust within the flex container */
+.rcw-widget-container {
+margin-left: auto;
+margin-right: 0;
+}
+
+// /* Positioning the widget at the bottom right */
+ position: fixed; /* or absolute, depending on your layout */
+bottom: 0;
+right: 0;
+// display: flex !important;
+// justify-content: flex-end !important;
+// position: relative !important;
+// float: right !important;
+// margin-left: auto !important;; 
+// margin-right: 0 !important;
+
+/* Scale up the widget to double its size */
+transform: scale(0.8);
+transform-origin: bottom right; /* Ensure scaling happens relative to the bottom right corner */
+
+// INDEPENDET VARIABLE 5
+// Only show summarization window/ also include chat
+// This controls whether the chatbar is visible or not
+// .rcw-sender{
+//   display: none;
+// }
+.chat-widget-container {
+  max-height: 90vh; /* Adjust based on your need */
+  overflow-y: auto; /* Allows scrolling within the widget */
+}
+`;
   const StyledWidget = styled.div`
   .rcw-conversation-container > .rcw-header {
     background-color: #bf5700	 !important;
@@ -233,6 +314,7 @@ const button = styled.div`
       border-color: #bf5700 !important;
      
   }
+  
   // .rcw-widget-container{
   //     position: relative !important;
   // }
@@ -252,9 +334,16 @@ const button = styled.div`
   margin-right: 0;
 }
 
-  // /* Positioning the widget at the bottom right */
-  position: fixed; /* or absolute, depending on your layout */
-  bottom: 0;
+ 
+   position: fixed;
+   /**
+    * INDEPENDET VARIABLE 4
+    * Discussion Summary
+    * The entire discussion is summarized, including the comments.
+    *   bottom: 0px;
+    */ 
+  //  bottom: 0px;
+  bottom: 130px;
   right: 0;
   // display: flex !important;
   // justify-content: flex-end !important;
@@ -296,25 +385,31 @@ const button = styled.div`
     gptSummaryAPI(SimpleLanguageSummaryPrompt)
   };
 
-  const handlePollSummaryGeneration = () => {
+  const handleGraphsummaryGeneration = () => {
+    console.log("I was here 1")
     fetchComments().then((res) => {
       const mappedData = res.map(item => ({
         txt: item?.txt,
         tid: item?.tid,
       }));
-
+      console.log("I was here 2")
 
       const mappedDataString = JSON.stringify(mappedData);
 
       const poll = extractDataFromString(props.response.pca);
 
       const groupAwareConsensusString = JSON.stringify(poll['group-aware-consensus']);
-      const repnessString = JSON.stringify(poll.repness);
-      console.log("repnessString", poll)
+      const Representativnes = JSON.stringify(poll['repness']);
+      const comment_priorities = JSON.stringify(poll['comment-priorities']);
+
+   
+  
+
 
       const pollSummarization = "The topic is Summary about" + props.response.conversation.topic + ". The graph in the discussion was made by voting on the following statements with true or false" 
-      + mappedDataString + "group-aware-consensus" + groupAwareConsensusString + "repness: " + repnessString + 
-      "Please try to make sense about what the values say about the comments. Please interpret if the people agree with the statement or not and what the overall mood of the topic is. " + 
+      + mappedDataString +"The graph shows the following data for the group aware consensus" + groupAwareConsensusString +  "Group aware consensus is a measure of the extent to which an opinion group in the conversation agrees (by vote) in response to a particular comment. " +
+      "The graph shows the following data for the Representativnes of Comments" + Representativnes +  "Representativnes is the degree to which a given comment differentiates one group from another" + 
+      "please try to make sense about what the values say about the comments. Please interpret if the people agree with the statement or not and what the overall mood of the topic is. " + 
       "Please make it into one paragraph and don't directly tell which statements they have."
       gptSummaryAPI(pollSummarization)
 
@@ -325,7 +420,6 @@ const button = styled.div`
   const handleDiscussionSummaryGeneration = () => {
     console.log("I was here 1")
     fetchComments().then((res) => {
-      console.log("I was here 2")
       const mappedData = res.map(item => ({
         txt: item?.txt,
         tid: item?.tid,
@@ -333,15 +427,15 @@ const button = styled.div`
 
       const mappedDataString = JSON.stringify(mappedData);
 
-      console.log("I was here 3")
       const CommentSummaryPrompt = "Please summarize the discussion" + props.response.conversation.topic + "These are the discussion statements" + mappedDataString + props.response.conversation.description + "Determine the primary arguments or viewpoints from the discussion." + "Identify any common themes or points of agreement among the comments." + "This summary will offer a comprehensive overview of the discussion, enabling readers to quickly understand the key topics and the spectrum of views presented." 
       gptSummaryAPI(CommentSummaryPrompt)
-      console.log("I was here 4")
       const furtherInformation = "This is the discussion" + props.response.conversation.topic + "These are the discussion statements" + mappedDataString + props.response.conversation.description + "Please identify the three main topics of the discussion. Please provide them in the following schema [topic1] [topic2] [topic3]."
       // console.log("furtherinformation", furtherInformation)
+     
       gptSummaryAPI_console(furtherInformation)
     })
   };
+
 
   const handleCommentSummaryGeneration = () => {
     fetchComments().then((res) => {
@@ -370,6 +464,15 @@ const button = styled.div`
     })
 
   }
+
+  const handleBack = () => {
+    setTopicsHistory((prevHistory) => {
+      const history = prevHistory.slice(0, -1); // Remove the last set of topics
+      const lastTopics = history[history.length - 1] || [];
+      setExtractedTopics(lastTopics); // Set to the last topics, or empty if none are left
+      return history;
+    });
+  };
 
 
 
@@ -480,29 +583,33 @@ const button = styled.div`
             </div>
           ))}
         </div> */}
-        <div>
-        {extractedTopics.map((topic, index) => {
-          const buttonName = `Button ${index + 1}: ${topic}`; // Customize this as needed
-          return (
-            <button key={index} onClick={() => log_button_content(buttonName)}>
-              {buttonName}
-            </button>
-          );
-        })}
-      </div>
-
-
-          
-            <Widget
+     
+       
+          <WidgetContainer>
+       
+          <Widget
               handleNewUserMessage={handleNewUserMessage}
               title={title}
               subtitle={description}
               senderPlaceHolder="Question about the statement?"
+              
               // resizable={true}
               emojis={true}
+              
 
             />
+          
+         
+          
+          </WidgetContainer>
+          
+           
+             
           </StyledWidget>
+          <StyledWidgetTree>
+          {showTreeSummary && <TreeSummary topics={extractedTopics} onButtonClick={log_button_content} onBack={handleBack}/>}
+
+          </StyledWidgetTree>
         </div>
       </div>
 

@@ -1080,6 +1080,45 @@ function initializePolisHelpers() {
     return _auth(assigner, false);
   }
 
+  async function handle_GET_gptSummary_tree(req, res) {
+    try {
+      
+      // Extracting the question string from the request
+      const questionString = req.body.question;
+      const completion = await openai.chat.completions.create({
+        messages: [
+          {"role": "system", "content": "You are a helpful assistant."},
+          {
+            "role": "user",
+            "content": "This is the discussionUse Cases for Unmanned Aerial Mobility (UAM)These are the discussion statements[{txt:I would be willing to commute with UAMs at least once in my life.,tid:0},{txt:I would be willing to pay 30 $ to drive with an UAM from the University to The Domain.\n,tid:1},{txt:UAMs should deliver my online shopping packages.,tid:2},{txt:I would not mind that UAMs fly over my house.\n,tid:3},{txt:I would be ok if there would be a landing pad in the radius of 0.5 mile of my house.\n,tid:4},{txt:I am interested in using UAMs instead of services like Uber, Lyft or Taxis.\n,tid:5},{txt:I would be willing to pay 70 $ to drive with an UAM from the University to The Domain.\n,tid:6},{txt:I would take a UAM even if it is as loud as 110db (db if someone would shout at you directly).,tid:7},{txt:I would not mind when UAMs constantly fly over my garden.,tid:8},{txt:I would feel safe taking a UAM even if there was minor turbulence.,tid:9This thread describes use cases for Unmanned Aerial MobilityPlease identify the three main topics of the discussion. Please provide them in the following schema [topic1] [topic2] [topic3].",
+        },
+        {
+            "role": "assistant",
+            "content": "[Commuting using UAMs] [Delivery services by UAMs] [Acceptance of noise pollution]",
+        },
+          { "role": "user", "content": questionString },
+          
+        ],
+        model: "gpt-3.5-turbo",
+      });
+
+      console.log(completion)
+      // Check if the response is valid and is a string
+      if (completion.choices[0].message && typeof completion.choices[0].message.content === 'string') {
+        // Send the AI's response as a message
+        res.status(200).json({ message: completion.choices[0].message.content });
+      } else {
+        // Handle cases where the response is not in the expected format
+        console.error('Received non-string message content');
+        res.status(500).json({ error: 'Invalid response format from AI' });
+      }
+    } catch (err) {
+      // In case of any error, send an error response
+      console.error('Error during API request:', err);
+      res.status(500).json({ error: err.message });
+    }
+  }
+
   async function handle_GET_gptSummary(req, res) {
     try {
       
@@ -1137,6 +1176,7 @@ function initializePolisHelpers() {
       res.status(500).json({ error: err.message });
     }
   }
+
   function enableAgid(req: { body: Body }, res: any, next: () => void) {
     req.body.agid = 1;
     next();
@@ -14297,6 +14337,7 @@ Thanks for using Polis!
     handle_GET_conditionalIndexFetcher,
     handle_GET_contexts,
     handle_GET_gptSummary,
+    handle_GET_gptSummary_tree,
     handle_GET_conversationPreloadInfo,
     handle_GET_conversations,
     handle_GET_conversationsRecentActivity,
