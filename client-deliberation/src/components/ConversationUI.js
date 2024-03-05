@@ -343,7 +343,7 @@ transform-origin: bottom right; /* Ensure scaling happens relative to the bottom
     *   bottom: 0px;
     */ 
   //  bottom: 0px;
-  bottom: 130px;
+  bottom: 160px;
   right: 0;
   // display: flex !important;
   // justify-content: flex-end !important;
@@ -607,7 +607,7 @@ transform-origin: bottom right; /* Ensure scaling happens relative to the bottom
              
           </StyledWidget>
           <StyledWidgetTree>
-          {showTreeSummary && <TreeSummary topics={extractedTopics} onButtonClick={log_button_content} onBack={handleBack}/>}
+          {showTreeSummary && <TreeSummary topics={extractedTopics} onButtonClick={log_button_content} onBack={handleBack} topicsHistory={topicsHistory}/>}
 
           </StyledWidgetTree>
         </div>
