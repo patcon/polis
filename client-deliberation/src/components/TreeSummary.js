@@ -3,13 +3,14 @@ import styled from 'styled-components';
 
 // Styled components
 const Container = styled.div`
-  background-color: #BF5700; /* Adjust the color to match the background color in your image */
-  padding: 20px;
+  
+
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  max-width: 600px;
+    width:600px;
   margin: auto;
-  height: 300px; /* Set the height to 250px */
+  corner-radius: 8px 8px 8px 8px; /* Rounded corners on the top */
+
 
 
   /* Hide scrollbar for IE, Edge, and Firefox */
@@ -23,28 +24,39 @@ const Container = styled.div`
 `;
 
 const Title = styled.h1`
-  color: #ffffff; /* Adjust the color to match the title color in your image */
+  color: #ffffff;
   font-size: 24px;
   text-align: center;
-  margin-bottom: 16px;
-  margin-top: 0;
-  padding-top: 0;
+  margin-bottom: 0; /* Remove bottom margin to allow WhiteBackground to start immediately after */
 `;
 
 const Subtitle = styled.h2`
-  color: #ffffff; /* Adjust the color to match the subtitle color in your image */
+  color: #ffffff;
   font-size: 18px;
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 0; /* Remove bottom margin to allow WhiteBackground to start immediately after */
+  padding: 20px 0; /* Add padding to give some space */
+  background-color: #BF5700; /* This ensures the subtitle has the same background color as the title */
 `;
 
+const WhiteBackground = styled.div`
+  background-color: white;
+
+  border-radius: 0 0 8px 8px; /* Continue the border-radius on the bottom corners */
+`;
+
+const OrangeBackground = styled.div`
+  background-color: #BF5700; 
+  border-radius: 8px 8px 8px 8px; /* Continue the border-radius on the top corners */
+
+`;
 const Content = styled.p`
   color: #424242; /* Adjust the color to match the content color in your image */
   line-height: 1.6;
 `;
 
 const StyledButton = styled.button`
-  background-color: #f2a900; /* Button background color */
+  background-color: #BF5700; /* Button background color */
   color: #ffffff; /* Button text color */
   border: none;
   border-radius: 4px;
@@ -69,7 +81,7 @@ const StyledButton = styled.button`
   }
 `;
 const BackButton = styled.button`
-  background-color: #f2a900; /* Example background color, adjust as needed */
+  background-color: #e58e00; /* Example background color, adjust as needed */
   color: #ffffff; /* Text color */
   border: none;
   border-radius: 4px;
@@ -94,6 +106,7 @@ const BackButton = styled.button`
 
 const TreeSummary = ({ topics, onButtonClick, onBack, topicsHistory }) => (
     <Container>
+<OrangeBackground>
             {/* <button onClick={onBack}>Back</button> */}
             {
       topicsHistory.length > 1 && 
@@ -104,6 +117,11 @@ const TreeSummary = ({ topics, onButtonClick, onBack, topicsHistory }) => (
     }
       <Title>Get further related summaries</Title>
       <Subtitle>Click on one of the buttons</Subtitle>
+      
+      
+    </OrangeBackground>
+   
+    <WhiteBackground>
       <Content>
         {topics.map((topic, index) => (
           <StyledButton key={index} onClick={() => onButtonClick(topic)}>
@@ -111,7 +129,10 @@ const TreeSummary = ({ topics, onButtonClick, onBack, topicsHistory }) => (
           </StyledButton>
         ))}
       </Content>
+      </WhiteBackground>
+
     </Container>
+    
   );
 
 export default TreeSummary;

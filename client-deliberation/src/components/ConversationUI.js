@@ -9,7 +9,7 @@ import HexLogo from "./hexLogo";
 import OpinionContainer from "./OpinionContainer";
 import PolisNet from "../util/net";
 import Visualization from "./Visualization";
-import { Widget, addResponseMessage, toggleWidget, setQuickButtons } from 'react-chat-widget';
+import { Widget, addResponseMessage, toggleWidget, setQuickButtons} from 'react-chat-widget';
 import 'react-chat-widget/lib/styles.css';
 import styled from 'styled-components';
 import TreeSummary from "./TreeSummary";
@@ -241,23 +241,9 @@ const WidgetContainer = styled.div`
 `;
 
 const StyledWidgetTree = styled.div`
-.rcw-conversation-container > .rcw-header {
-  background-color: #bf5700	 !important;
-}
-.rcw-client .rcw-message-text,
-.quick-button,
-.quick-button:active,
-.rcw-conversation-container .rcw-header,
-.rcw-full-screen .rcw-close-button,
-.rcw-launcher {
-    background-color: #bf5700 !important;
-    border-color: #bf5700 !important;
-   
-}
 
-// .rcw-widget-container{
-//     position: relative !important;
-// }
+
+
 /* Container holding the widget */
 .chat-widget-container {
 display: flex;
@@ -265,40 +251,18 @@ justify-content: flex-end; /* Aligns children (the widget) to the right */
 position: relative; /* Relative positioning of the container */
 }
 
-.rcw-message-text {
-max-width: none; }
 
-/* Style for the chat widget, if needed to adjust within the flex container */
-.rcw-widget-container {
-margin-left: auto;
-margin-right: 0;
-}
 
-// /* Positioning the widget at the bottom right */
  position: fixed; /* or absolute, depending on your layout */
 bottom: 0;
-right: 0;
-// display: flex !important;
-// justify-content: flex-end !important;
-// position: relative !important;
-// float: right !important;
-// margin-left: auto !important;; 
-// margin-right: 0 !important;
+left: 0;
+
 
 /* Scale up the widget to double its size */
 transform: scale(0.8);
-transform-origin: bottom right; /* Ensure scaling happens relative to the bottom right corner */
+transform-origin: bottom left; /* Ensure scaling happens relative to the bottom right corner */
 
-// INDEPENDET VARIABLE 5
-// Only show summarization window/ also include chat
-// This controls whether the chatbar is visible or not
-// .rcw-sender{
-//   display: none;
-// }
-.chat-widget-container {
-  max-height: 90vh; /* Adjust based on your need */
-  overflow-y: auto; /* Allows scrolling within the widget */
-}
+
 `;
   const StyledWidget = styled.div`
   .rcw-conversation-container > .rcw-header {
@@ -343,8 +307,9 @@ transform-origin: bottom right; /* Ensure scaling happens relative to the bottom
     *   bottom: 0px;
     */ 
   //  bottom: 0px;
-  bottom: 160px;
+  bottom: 0px;
   right: 0;
+  width: 700px;
   // display: flex !important;
   // justify-content: flex-end !important;
   // position: relative !important;
@@ -398,17 +363,20 @@ transform-origin: bottom right; /* Ensure scaling happens relative to the bottom
 
       const poll = extractDataFromString(props.response.pca);
 
+      //roup aware consensus is a measure of the extent to which an opinion group in the conversation agrees (by vote) in response to a particular comment. 
       const groupAwareConsensusString = JSON.stringify(poll['group-aware-consensus']);
-      const Representativnes = JSON.stringify(poll['repness']);
-      const comment_priorities = JSON.stringify(poll['comment-priorities']);
-
-   
-  
+      //Representativnes is the degree to which a given comment differentiates one group from another
+      const Representativnes = JSON.stringify(poll['repness']);   
 
 
-      const pollSummarization = "The topic is Summary about" + props.response.conversation.topic + ". The graph in the discussion was made by voting on the following statements with true or false" 
-      + mappedDataString +"The graph shows the following data for the group aware consensus" + groupAwareConsensusString +  "Group aware consensus is a measure of the extent to which an opinion group in the conversation agrees (by vote) in response to a particular comment. " +
-      "The graph shows the following data for the Representativnes of Comments" + Representativnes +  "Representativnes is the degree to which a given comment differentiates one group from another" + 
+      const pollSummarization = "The topic is Summary about" + props.response.conversation.topic + 
+      ". The graph in the discussion was made by voting on the following statements with true or false" 
+      + mappedDataString +"The graph shows the following data for the group aware consensus" + 
+      groupAwareConsensusString + 
+      "Group aware consensus is a measure of the extent to which an opinion group in the conversation agrees (by vote) in response to a particular comment. " +
+      "The graph shows the following data for the Representativnes of Comments" +
+      Representativnes +
+      "Representativnes is the degree to which a given comment differentiates one group from another" + 
       "please try to make sense about what the values say about the comments. Please interpret if the people agree with the statement or not and what the overall mood of the topic is. " + 
       "Please make it into one paragraph and don't directly tell which statements they have."
       gptSummaryAPI(pollSummarization)
@@ -592,7 +560,7 @@ transform-origin: bottom right; /* Ensure scaling happens relative to the bottom
               title={title}
               subtitle={description}
               senderPlaceHolder="Question about the statement?"
-              
+              resizable={true}
               // resizable={true}
               emojis={true}
               
