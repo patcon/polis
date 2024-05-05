@@ -1080,6 +1080,35 @@ function initializePolisHelpers() {
     return _auth(assigner, false);
   }
 
+  
+  async function handle_GET_raw_data(req, res) {
+    // Assuming `zid` is passed as a query parameter; otherwise, adjust as needed
+    // const zid = parseInt(req.query.zid, 10);
+    const zid = 5;
+
+    if (isNaN(zid)) {
+        res.status(400).send('Invalid zid provided');
+        return;
+    }
+
+    return pgQueryP("SELECT * FROM votes WHERE zid = $1;", [zid])
+        .then((rows: any[]) => {
+            if (!rows || !rows.length) {
+                // No rows found for the given zid
+                res.status(404).send('No data found');
+                return null;
+            }
+            res.status(200).json(rows); // Send the found rows as JSON
+            return rows;
+        })
+        .catch((error) => {
+            console.error('Error executing query:', error);
+            res.status(500).send('Internal server error');
+            throw error;
+        });
+}
+
+
   async function handle_GET_gptSummary_tree(req, res) {
     try {
       
@@ -1140,8 +1169,8 @@ function initializePolisHelpers() {
 
        /**
        * INDEPENDET VARIABLE 4
-       * Poll Summary
-       * The entire poll is summarized, including the comments and the poll results.
+       * Graph Summary
+       * The entire graph is summarized, including the comments and the graph results.
       */
       const completion = await openai.chat.completions.create({
         messages: [
@@ -14338,6 +14367,7 @@ Thanks for using Polis!
     handle_GET_contexts,
     handle_GET_gptSummary,
     handle_GET_gptSummary_tree,
+    handle_GET_raw_data,
     handle_GET_conversationPreloadInfo,
     handle_GET_conversations,
     handle_GET_conversationsRecentActivity,

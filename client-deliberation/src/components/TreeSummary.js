@@ -28,6 +28,7 @@ const Title = styled.h1`
   font-size: 24px;
   text-align: center;
   margin-bottom: 0; /* Remove bottom margin to allow WhiteBackground to start immediately after */
+  padding-top: 20px;
 `;
 
 const Subtitle = styled.h2`
@@ -35,7 +36,7 @@ const Subtitle = styled.h2`
   font-size: 18px;
   text-align: center;
   margin-bottom: 0; /* Remove bottom margin to allow WhiteBackground to start immediately after */
-  padding: 20px 0; /* Add padding to give some space */
+  padding-bottom: 20px;
   background-color: #BF5700; /* This ensures the subtitle has the same background color as the title */
 `;
 

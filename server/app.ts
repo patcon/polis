@@ -67,6 +67,7 @@ helpersInitialized.then(
 
       handle_GET_gptSummary,
       handle_GET_gptSummary_tree,
+      handle_GET_raw_data,
 
       middleware_log_request_body,
       middleware_log_middleware_errors,
@@ -1112,6 +1113,14 @@ helpersInitialized.then(
     moveToBody,
     handle_GET_gptSummary_tree
     )
+
+    app.get("/api/v3/rawdata",
+    moveToBody,
+    handle_GET_raw_data
+    )
+
+    ,
+
 
     app.post(
       "/api/v3/metadata/questions",

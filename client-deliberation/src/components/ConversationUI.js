@@ -57,21 +57,37 @@ const ConversationUI = (props) => {
     */
     toggleWidget();
 
-    /**
-     * INDEPENDET VARIABLE 4
-     * Graph Summary
-     * The entire Graph is summarized, including the comments and the Graph results.
-    */
+  //   /**
+  //    * INDEPENDET VARIABLE 4
+  //    * Graph Summary
+  //    * The entire Graph is summarized, including the comments and the Graph results.
+  // //   */
     // handleGraphsummaryGeneration()
 
-    /**
-     * INDEPENDET VARIABLE 4
-     * Discussion Summary
-     * The entire discussion is summarized, including the comments.
-     */
-    handleDiscussionSummaryGeneration()
+  //   // raw_data_to_console()
 
-   
+  //   /**
+  //    * INDEPENDET VARIABLE 4
+  //    * Discussion Summary
+  //    * The entire discussion is summarized, including the comments.
+  //    */
+    // handleDiscussionSummaryGeneration()
+
+
+
+  //   // Summarize all comments
+  //   // handleCommentSummary()
+
+  //   // Summarize group A and B
+// INDEPENDET VARIABLE 2
+// standard language
+    handleCommentSummary()
+  //   // groupABSummaryGeneration()
+  //   const poll = extractDataFromString(props.response.pca)
+  //   const Representativnes = JSON.stringify(poll);   
+  //   console.log(props)
+  //  console.log("lol", extractDataFromString(Representativnes))
+
   }, []); // Dependencies array
 
 
@@ -139,7 +155,7 @@ const ConversationUI = (props) => {
   const gptSummaryAPI = (questionString) => {
     PolisNet.polisGet("/api/v3/gptSummary", { question: questionString })
       .then(response => {
-
+        console.log("GPT respons22222e", response)
         if (response && response.message && typeof response.message === 'string') {
           addResponseMessage(response.message);
         } else {
@@ -165,6 +181,50 @@ const ConversationUI = (props) => {
         } else {
           console.error('Received non-string message content or invalid response structure');
         }
+      })
+      .fail(err => console.error('Error calling API:', err));
+  };
+
+
+  const raw_data_to_console = (questionString) => {
+    PolisNet.polisGet("/api/v3/rawdata", { question: questionString })
+      .then(response => {
+        console.log("Raw data response", response, typeof response);
+  
+        fetchComments().then((comments) => {
+          const responsesWithComments = response.map(res => {
+            const comment = comments.find(comment => comment.tid === res.tid);
+            let userInteraction;
+            switch (res.vote) {
+              case 1:
+                userInteraction = 'Agree';
+                break;
+              case 0:
+                userInteraction = 'Disagree';
+                break;
+              case -1:
+                userInteraction = 'Skip';
+                break;
+              default:
+                userInteraction = 'Unknown';
+            }
+  
+            return {
+              tid: res.tid,
+              comment: comment ? comment.txt : 'No comment found',
+              userInteraction
+            };
+          });
+          const mappedDataString1 = JSON.stringify(responsesWithComments);
+          const CommentSummaryPrompt = "Please summarize the discussion" + props.response.conversation.topic + 
+          "These are the discussion statements and wheather the users agree, disagree or skip"+
+          mappedDataString1 + "Determine the primary arguments or viewpoints from the discussion." + 
+           "Identify any common themes or points of agreement among the comments." + 
+          "This summary will offer a comprehensive overview of the discussion, enabling readers to quickly understand the key topics and the spectrum of views presented." 
+          gptSummaryAPI(CommentSummaryPrompt)
+  
+          console.log("Responses with comments and user interactions:", mappedDataString1);
+        });
       })
       .fail(err => console.error('Error calling API:', err));
   };
@@ -241,17 +301,12 @@ const WidgetContainer = styled.div`
 `;
 
 const StyledWidgetTree = styled.div`
-
-
-
 /* Container holding the widget */
 .chat-widget-container {
 display: flex;
 justify-content: flex-end; /* Aligns children (the widget) to the right */
 position: relative; /* Relative positioning of the container */
 }
-
-
 
  position: fixed; /* or absolute, depending on your layout */
 bottom: 0;
@@ -351,38 +406,234 @@ transform-origin: bottom left; /* Ensure scaling happens relative to the bottom 
   };
 
   const handleGraphsummaryGeneration = () => {
-    console.log("I was here 1")
-    fetchComments().then((res) => {
-      const mappedData = res.map(item => ({
-        txt: item?.txt,
-        tid: item?.tid,
-      }));
-      console.log("I was here 2")
-
-      const mappedDataString = JSON.stringify(mappedData);
-
+    fetchComments().then((res) => {  
       const poll = extractDataFromString(props.response.pca);
+      const groupAwareConsensus = poll['group-aware-consensus'];
+      const allRepnessData = [poll['repness'][0][0]]; 
+      for (let i = 0; i < poll['repness'][1].length; i++) {
+        allRepnessData.push(poll['repness'][1][i]);
+      }
+      const mappedData = res.map(item => {
+        // Find the repness data matching the current item's tid
+        const repnessData = allRepnessData.find(rep => rep.tid === item.tid) || {};
+  
+        const consensus = groupAwareConsensus[item.tid] || 0;
 
-      //roup aware consensus is a measure of the extent to which an opinion group in the conversation agrees (by vote) in response to a particular comment. 
-      const groupAwareConsensusString = JSON.stringify(poll['group-aware-consensus']);
-      //Representativnes is the degree to which a given comment differentiates one group from another
-      const Representativnes = JSON.stringify(poll['repness']);   
+        return {
+          txt: item?.txt,
+          tid: item?.tid,
+          bestAgree: repnessData['best-agree'],
+          nAgree: repnessData['n-agree'],
+          nSuccess: repnessData['n-success'],
+          nTrials: repnessData['n-trials'],
+          pSuccess: repnessData['p-success'],
+          pTest: repnessData['p-test'],
+          repfulFor: repnessData['repful-for'],
+          repness: repnessData.repness,
+          repnessTest: repnessData['repness-test'],
+          groupAwareConsensus: consensus,
+        };
+      });
+  
+  
+      const mappedDataString = JSON.stringify(mappedData);
+      console.log("mappedDataString sssss", mappedDataString)
 
 
-      const pollSummarization = "The topic is Summary about" + props.response.conversation.topic + 
-      ". The graph in the discussion was made by voting on the following statements with true or false" 
-      + mappedDataString +"The graph shows the following data for the group aware consensus" + 
-      groupAwareConsensusString + 
-      "Group aware consensus is a measure of the extent to which an opinion group in the conversation agrees (by vote) in response to a particular comment. " +
-      "The graph shows the following data for the Representativnes of Comments" +
-      Representativnes +
-      "Representativnes is the degree to which a given comment differentiates one group from another" + 
-      "please try to make sense about what the values say about the comments. Please interpret if the people agree with the statement or not and what the overall mood of the topic is. " + 
-      "Please make it into one paragraph and don't directly tell which statements they have."
-      gptSummaryAPI(pollSummarization)
+      const graphSummarization = "This is the topic of the conversation:" + props.response.conversation.topic + 
+      "The graph in the discussion was made by voting on the following statements with agree, disagree or skip on statements."  + mappedDataString +
+      + "Every statement has a group aware consensus. This is a measure of the extent to which an opinion group in the conversation agrees (by vote) in response to a particular comment. " +
+      + "Furthermore, some statement have a bestAgree value, which describes the highest level of agreement or consensus within a specific dataset or group." +
+      + "Some statements have a nAgree value, this is the number of entities or participants who have agreed or provided a positive response in a given context. It quantifies agreement."+
+      + "Some statements have a nSuccess value, this counts the number of successful outcomes or instances within a set of trials or attempts."+
+      + "Some statements have a nTrials value, This represents the total number of trials, tests, or attempts conducted."+
+      + "Some statements have a pSuccess value, this is the probability of success or the success rate. It is calculated based on the ratio of successful outcomes to the total number of trials or attempts."+
+      + "Some statements have a repfulFor value, this indicate a measure or a feature that represents how representative or reputable something is"+
+      + "Some statements have a repness value, this quantifies how well a sample or a set of data represents a larger population or set of characteristics. "+
+      + "Some statements have a repnessTest value, This is  a test or evaluation related to the 'repness' measure. "+
+      "Please analyze the data to understand what the values indicate about the comments. Interpret whether the participants agree with the statements and describe the overall mood. Please give information on what key points. Make it sound like a human would say it."
+    
 
-    })
+      const graphSummarization2 = "This conversation centers around: " +props.response.conversation.topic +
+      ". The graph depicts opinions gathered through voting on statements, where participants could choose to agree, disagree, or skip."+ mappedDataString +
+      "Each statement carries a group-aware consensus, showing how much agreement a specific group has towards a statement. " + 
+      "Additionally, some statements feature a 'bestAgree' value indicating the highest level of consensus within a particular dataset or group. " +
+      "Other metrics include 'nAgree' (number of agreeing participants), 'nSuccess' (number of successful outcomes), 'nTrials' (total number of attempts), 'pSuccess' (success rate), "+ 
+      "'repfulFor' (reputation measure), 'repness' (representativeness measure), and 'repnessTest' (test related to representativeness). "+
+      "Your task is to analyze these metrics to understand participant agreement, describe the overall sentiment, and highlight key points. Please provide insights in a conversational, human-like manner."
+
+      const graphSummarization3 = "The topic of discussion revolves around "+props.response.conversation.topic +
+      ". In our conversation, we've gathered opinions through voting on various statements where participants could express agreement, disagreement, or choose to skip."+ mappedDataString +
+      "Each statement in our graph represents a consensus within specific groups, indicating how much agreement there is among participants."+ 
+      "Additionally, some statements have a 'bestAgree' value, which reflects the highest level of agreement within certain datasets or groups."+
+      "Let's delve into the metrics we've gathered:"+
+      "'nAgree' tells us how many participants agreed or provided positive responses to a statement, giving us a quantitative measure of agreement."+
+      "'nSuccess' counts the number of successful outcomes or instances within our discussions."+
+      "'nTrials' represents the total number of trials, tests, or attempts conducted in our conversation."+
+      "'pSuccess' shows the probability of success or the success rate, calculated based on successful outcomes versus total trials."+
+      "'repfulFor' indicates how representative or reputable a particular aspect of our data is."+
+      "'repness' quantifies how well our sample represents a larger population or set of characteristics."+
+      "'repnessTest' relates to tests or evaluations we've conducted regarding the representativeness of our data."+
+      "Your task is to interpret these metrics to understand participant agreement, describe the overall mood of the conversation, and identify key points that stand out."+
+      "Create a summary which is friendly for new people in the discussion."
+      
+      
+      gptSummaryAPI(graphSummarization)
+
+      setTimeout(groupABSummaryGeneration, 1000);
+  })
+
+    // fetchComments().then((res) => {
+    //   const mappedData = res.map(item => ({
+    //     txt: item?.txt,
+    //     tid: item?.tid,
+    //   }));
+
+    //   const mappedDataString = JSON.stringify(mappedData);
+
+    //   const poll = extractDataFromString(props.response.pca);
+
+    //   //roup aware consensus is a measure of the extent to which an opinion group in the conversation agrees (by vote) in response to a particular comment. 
+    //   const groupAwareConsensusString = JSON.stringify(poll['group-aware-consensus']);
+    //   //Representativnes is the degree to which a given comment differentiates one group from another
+    //   const Representativnes = JSON.stringify(poll['repness']);   
+
+
+    //   const pollSummarization = "This is the topic of the conversation:" + props.response.conversation.topic + 
+    //   "The graph in the discussion was made by voting on the following statements with agree, disagree or skip" 
+    //   + mappedDataString +"The graph shows the following data for the group aware consensus" + 
+    //   groupAwareConsensusString + 
+    //   "Group aware consensus is a measure of the extent to which an opinion group in the conversation agrees (by vote) in response to a particular comment. " +
+    //   "The graph shows the following data for the Representativnes of Comments" +
+    //   Representativnes +
+    //   "Representativnes is the degree to which a given comment differentiates one group from another" + 
+    //   "Please analyze the data to understand what the values indicate about the comments. Interpret whether the participants agree with the statements and describe the overall mood of the topic. Avoid direct references to specific statements."
+    //   // gptSummaryAPI(pollSummarization)
+
+    //   // setTimeout(groupABSummaryGeneration, 1000);
+
+    // })
   };
+
+  const groupABSummaryGeneration = () => {
+    fetchComments().then((res) => {
+      const poll = extractDataFromString(props.response.pca);
+      const representativnessA = poll['group-votes'][0];
+      const representativnessB = poll['group-votes'][1];
+  
+      const mappedDataA = res.map(item => {
+        const voteStats = representativnessA.votes[item.tid] || { A: 0, D: 0, S: 0 };
+        return {
+          txt: item?.txt,
+          tid: item?.tid,
+          Agree: voteStats.A,
+          Disagree: voteStats.D,
+          Skip: voteStats.S,
+        };
+      });
+      const mappedDataB = res.map(item => {
+        const voteStats = representativnessB.votes[item.tid] || { A: 0, D: 0, S: 0 };
+        return {
+          txt: item?.txt,
+          tid: item?.tid,
+          Agree: voteStats.A,
+          Disagree: voteStats.D,
+          Skip: voteStats.S,
+        };
+      });
+
+      const mappedDataStringA = JSON.stringify(mappedDataA);
+
+      const mappedDataStringB = JSON.stringify(mappedDataB);
+  const CommentSummaryPromptA = "The discussion is about:" + props.response.conversation.topic + "This is an object with the discussion statements and how many people of group A agree, disagree or skipped the statement" + mappedDataStringA +  "Please analyze the data to understand what the values indicate about the comments. Interpret whether the participants of group A agree with the statements and describe the overall mood of group A. Please give information on what key points the group A agrees on and what key points the group A disagrees on. Make it sound like a human would say it."
+      gptSummaryAPI(CommentSummaryPromptA)
+      const CommentSummaryPromptB = "The discussion is about:" + props.response.conversation.topic + "This is an object with the discussion statements and how many people of group B agree, disagree or skipped the statement" + mappedDataStringB +  "Please analyze the data to understand what the values indicate about the comments. Interpret whether the participants of group B agree with the statements and describe the overall mood of group B. Please give information on what key points the group B agrees on and what key points the group B disagrees on. Make it sound like a human would say it."
+      gptSummaryAPI(CommentSummaryPromptB)
+
+
+      // const mappedDataVersion1 = res.map(item => {
+      //   const voteStatsA = representativnessB.votes[item.tid] || { A: 0, D: 0, S: 0 };
+      //   const voteStatsB = representativnessA.votes[item.tid] || { A: 0, D: 0, S: 0 };
+      //   const voteStatAgree = voteStatsA.A + voteStatsB.A;
+      //   const voteStatDisagree = voteStatsA.D + voteStatsB.D;
+      //   const voteStatTotal = voteStatAgree + voteStatDisagree;
+      //   const voteStatAgreePercentage = voteStatAgree / voteStatTotal;
+      //   const voteStatDisagreePercentage = voteStatDisagree / voteStatTotal;
+      //   return {
+      //     Comment: item?.txt, 
+      //     Number_of_agree_votes: voteStatAgree,
+      //     Number_of_disagree_votes: voteStatDisagree,
+      //   };
+      // });
+
+      const mappedDataVersion2 = res.map(item => {
+        const voteStatsA = representativnessB.votes[item.tid] || { A: 0, D: 0, S: 0 };
+        const voteStatsB = representativnessA.votes[item.tid] || { A: 0, D: 0, S: 0 };
+        const voteStateTotalA = voteStatsA.A + voteStatsA.D;
+        const voteStateTotalB = voteStatsB.A + voteStatsB.D;
+        const voteStatAgreePercentageA = voteStatsA.A / voteStateTotalA;
+        const voteStatDisagreePercentageA = voteStatsA.D / voteStateTotalA;
+        const voteStatAgreePercentageB = voteStatsB.A / voteStateTotalB;  
+        const voteStatDisagreePercentageB = voteStatsB.D / voteStateTotalB; 
+        return {
+          Comment: item?.txt, 
+          Group_0_percentage_agreement: voteStatAgreePercentageA,
+          Group_0_percentage_disagreement: voteStatDisagreePercentageA,
+          Group_1_percentage_agreement: voteStatAgreePercentageB,
+          Group_1_percentage_disagreement: voteStatDisagreePercentageB,
+        };
+      });
+  
+
+
+      // const mappedDataversion1 = JSON.stringify(mappedDataVersion1);
+      const mappedDataversion2 = JSON.stringify(mappedDataVersion2);
+  
+    
+      // const Summary_Technique_from_Paper = " In each line, I provide you with comments and percentage of votes" +
+      // "that agreed and disagreed with them for Group 0 and Group 1. I want you" +
+      // "to do topic modeling on the given comments. Print the detected topics line" +
+      // "by line. At the end, generate an overall summary of the comments. In the" +
+      // "summary, make sure to include information and quantification on how much" +
+      // "agreement versus disagreement there was across Group 0 and Group 1 for" +
+      // "different topics. Here are the comments:" + mappedDataversion2
+
+      const Summary_Technique_from_Paper2 = "Analyze the provided comments for Group 0 and Group 1, which include vote percentages for agreement and disagreement. Perform topic modeling and list the topics identified from the comments. Conclude with a summary that quantifies the agreement and disagreement levels for each topic across both groups. The comments are as follows:" + mappedDataversion2
+      const Summary_Technique_from_Paper3 = 
+      "Provide a summary of the discussion, highlighting the key topics and overall sentiment for Group 0 and Group 1."+
+      " Explain how each group's comments contribute to the mood of the conversation, whether it's positive, negative, or mixed. This summary should offer new users a clear insight into the emotional tone and main subjects discussed by both groups."+
+      " Here are the comments:" + mappedDataversion2
+      // gptSummaryAPI(Summary_Technique_from_Paper3)
+
+      // const mappedDataVersion7 = res.map(item => {
+      //   const voteStatsA = representativnessB.votes[item.tid] || { A: 0, D: 0, S: 0 };
+      //   const voteStatsB = representativnessA.votes[item.tid] || { A: 0, D: 0, S: 0 };
+      //   const voteStateTotalA = voteStatsA.A + voteStatsA.D;
+      //   const voteStateTotalB = voteStatsB.A + voteStatsB.D;
+      //   const voteStatAgreePercentageA = voteStatsA.A / voteStateTotalA;
+      //   const voteStatDisagreePercentageA = voteStatsA.D / voteStateTotalA;
+      //   const voteStatAgreePercentageB = voteStatsB.A / voteStateTotalB;  
+      //   const voteStatDisagreePercentageB = voteStatsB.D / voteStateTotalB; 
+      //   return {
+      //     Comment: item?.txt, 
+      //     Group_0_percentage_agreement: voteStatAgreePercentageA,
+      //     Group_0_percentage_disagreement: voteStatDisagreePercentageA,
+      //     Group_1_percentage_agreement: voteStatAgreePercentageB,
+      //     Group_1_percentage_disagreement: voteStatDisagreePercentageB,
+      //   };
+      // });
+
+      // const mappedDataversion7 = JSON.stringify(mappedDataVersion7);
+      // const Summary_Technique_from_Paper7 = "Perform topic modeling on the provided comments and print the detected topics line-by-line. At the end, summarize the key topics discussed" +
+      // "and quantify the level of agreement vs disagreement between Group 0 and" +
+      // "Group 1. Specifically, note which topics had high agreement or disagreement. Provide an overview of the difference in opinion between the two"+
+      // "groups based on the topic modeling analysis." + mappedDataversion7
+      // gptSummaryAPI(Summary_Technique_from_Paper7)
+
+      // console.log("mappedDataVersion1", Summary_Technique_from_Paper7)
+    })
+  }
+  
 
 
   const handleDiscussionSummaryGeneration = () => {
@@ -404,6 +655,23 @@ transform-origin: bottom left; /* Ensure scaling happens relative to the bottom 
     })
   };
 
+  const handleCommentSummary = () => {
+    fetchComments().then((res) => {
+      const mappedData = res.map(item => {
+        // Find the repness data matching the current item's tid
+       
+
+        return {
+          txt: item?.txt,
+          tid: item?.tid,
+        };
+      });
+      const CommentSummaryPrompt = "Please summarize the discussion" + props.response.conversation.topic + "These are the discussion statements" + mappedData + props.response.conversation.description + "Determine the primary arguments or viewpoints from the discussion." + "Identify any common themes or points of agreement among the comments." + "This summary will offer a comprehensive overview of the discussion, enabling readers to quickly understand the key topics and the spectrum of views presented." 
+        gptSummaryAPI(CommentSummaryPrompt)
+    
+    })
+  }
+
 
   const handleCommentSummaryGeneration = () => {
     fetchComments().then((res) => {
@@ -416,12 +684,14 @@ transform-origin: bottom left; /* Ensure scaling happens relative to the bottom 
     })
   };
 
+
+
   const log_button_content = (buttonName) => {
     const CommentSummaryPrompt = "Please summarize the discussion" + props.response.conversation.topic + "This is the main topic of discussion: " + buttonName + "Determine the primary arguments or viewpoints from the discussion." + "Identify any common themes or points of agreement among the comments." + "This summary will offer a comprehensive overview of the discussion, enabling readers to quickly understand the key topics and the spectrum of views presented." 
-        gptSummaryAPI(CommentSummaryPrompt)
+        // gptSummaryAPI(CommentSummaryPrompt)
     const furtherInformation = "This is the discussion" + props.response.conversation.topic + "This is the main topic of discussion: " + buttonName + "Please identify the three main topics of the discussion. Please provide them in the following schema [topic1] [topic2] [topic3]."
     // console.log("furtherinformation", furtherInformation)
-    gptSummaryAPI_console(furtherInformation)
+    // gptSummaryAPI_console(furtherInformation)
   };
   
 
