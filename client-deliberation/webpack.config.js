@@ -153,6 +153,10 @@ module.exports = (env, options) => {
         {
           test: /\.mdx?$/,
           use: ['babel-loader', '@mdx-js/loader']
+        },
+        {
+          test: /\.css$/,
+          use: ['style-loader', 'css-loader']
         }
       ],
     },
