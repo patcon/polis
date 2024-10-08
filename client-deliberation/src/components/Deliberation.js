@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Button } from "theme-ui";
 import UnderstandAI from "./UnderstandAI";
 import IndividualDeliberation from "./IndividualDeliberation";
-import ProgressBar from "./Progressbar";
+import ProgressBar from "./ProgressBar";
 import Tutorial from "./Tutorial";
 import ConversationUI from "./ConversationUI";
 import Legal from "./Legal";
