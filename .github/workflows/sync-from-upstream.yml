@@ -1,0 +1,27 @@
+name: 'Merge to Development'
+on:
+  # Allow manual trigger from workflow page.
+  workflow_dispatch:
+
+  # Every day at 2am ET (6am UTC)
+  # See: https://crontab.guru/#0_6_*_*_*
+  schedule:
+    - cron:  '0 6 * * *'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+        fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
+        repository: compdemocracy/polis
+        ref: edge
+
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+        repository: patcon/polis
+        branch: edge
