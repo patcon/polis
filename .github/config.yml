@@ -2,7 +2,7 @@
 # See: https://github.com/repository-settings/app
 # See: https://github.com/repository-settings/app/blob/master/docs/plugins/rulesets.md
 rulesets:
-  - name: edge-sync-only
+  - name: Only allow workflow to sync edge branch
     target: branch
     enforcement: active
     bypass_actors:
