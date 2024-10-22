@@ -26,6 +26,6 @@ jobs:
       with:
         # This approach allows us to bypass branch protection.
         # See: https://github.com/ad-m/github-push-action#:~:text=push%20to%20a-,protected%20branch,-inside%20your%20repository
-        token: ${{ secrets.PAT_TOKEN }}
+        github_token: ${{ secrets.PAT_TOKEN }}
         branch: edge
         repository: patcon/polis
