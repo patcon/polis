@@ -17,8 +17,9 @@ jobs:
         # See: https://github.com/ad-m/github-push-action#:~:text=push%20to%20a-,protected%20branch,-inside%20your%20repository
         # See: https://github.com/ad-m/github-push-action#:~:text=authenticate%20with%20GitHub%20Platform%20via%20Deploy%20Keys%20or%20in%20general%20SSH
         # TODO: Document branch ruleset.
-        ssh-key: ${{ secrets.EDGE_SYNCER_KEY_PRIV }}
-        persist-credentials: true
+#        ssh-key: ${{ secrets.EDGE_SYNCER_KEY_PRIV }}
+#        persist-credentials: true
+        token: ${{ secrets.PAT_TOKEN }}
         fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
         repository: compdemocracy/polis
         ref: edge
@@ -27,6 +28,7 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         # This approach allows us to bypass branch protection. (See above)
-        ssh: true
+        #ssh: true
+        github_token: ${{ secrets.PAT_TOKEN }}
         branch: edge
         repository: patcon/polis
