@@ -1,4 +1,4 @@
-name: 'Merge to Development'
+name: Sync edge branch from upstream
 on:
   # Allow manual trigger from workflow page.
   workflow_dispatch:
@@ -22,6 +22,5 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: ${{ github.ref }}
-        repository: patcon/polis
         branch: edge
+        repository: patcon/polis
