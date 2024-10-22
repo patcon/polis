@@ -5,9 +5,9 @@
 #         ssh-keygen -t ed25519 -C "dummy@example.com" -f /tmp/id_ed25519
 #
 #   - private key as EDGE_SYNCER_KEY_PRIV env var
-#     - see: https://github.com/patcon/polis/settings/secrets/actions
+#     - see: https://github.com/CivicTechTO/polis/settings/secrets/actions
 #   - public key as "edge-syncer"
-#     - see: https://github.com/patcon/polis/settings/keys
+#     - see: https://github.com/CivicTechTO/polis/settings/keys
 # 2. this workflow file
 #   - does codebase checkout with EDGE_SYNCER_KEY_PRIV
 #   - ssh key is persisted
@@ -48,4 +48,3 @@ jobs:
         # This approach allows us to bypass branch protection. (See above)
         ssh: true
         branch: edge
-        repository: patcon/polis
