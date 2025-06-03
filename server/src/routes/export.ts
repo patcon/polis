@@ -220,6 +220,7 @@ export async function sendCommentSummary(zid: number, res: Response) {
               agrees: (row) => String(row.agrees),
               disagrees: (row) => String(row.disagrees),
               moderated: (row) => String(row.mod),
+              "is-meta": (row) => String(row.is_meta),
               "comment-body": (row) => formatEscapedText(row.txt),
             },
             commentRows

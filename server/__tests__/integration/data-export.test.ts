@@ -95,6 +95,7 @@ describe('Data Export API', () => {
     expect(response.text).toContain('agrees');
     expect(response.text).toContain('disagrees');
     expect(response.text).toContain('moderated');
+    expect(response.text).toContain('is-meta');
     expect(response.text).toContain('comment-body');
 
     // Should contain all our test comments
