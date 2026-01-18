@@ -51,4 +51,4 @@ dev = [
 # Hatchling configuration - simplified for development
 [tool.hatch.build.targets.wheel]
 # Just include the Python modules in the current directory
-packages = ["."]
+packages = ["polismath_commentgraph"]
