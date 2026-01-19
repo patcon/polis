@@ -9,9 +9,24 @@ import logging
 import os
 import time
 from pathlib import Path
-import torch
 
 logger = logging.getLogger(__name__)
+
+# Lazy-load torch as optional dependency
+_torch = None
+
+def _get_torch():
+    """Lazy-load torch module."""
+    global _torch
+    if _torch is None:
+        try:
+            import torch
+            _torch = torch
+        except ImportError:
+            logger.warning("torch not available, will use CPU device")
+            _torch = False  # Mark as unavailable
+    return _torch if _torch is not False else None
+
 
 class EmbeddingEngine:
     """
@@ -49,10 +64,12 @@ class EmbeddingEngine:
         # Set up device
         if device:
             self.device = device
-        elif torch.cuda.is_available():
-            self.device = "cuda"
         else:
-            self.device = "cpu"
+            torch = _get_torch()
+            if torch and torch.cuda.is_available():
+                self.device = "cuda"
+            else:
+                self.device = "cpu"
         logger.info(f"Using device: {self.device}")
     
     @property

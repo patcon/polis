@@ -20,7 +20,7 @@ dependencies = [
     "scipy>=1.7.0",
     "pandas>=1.3.0",
     "scikit-learn>=1.3.0",
-    "torch>=1.11.0",
+    # torch is now optional - only required for CUDA support
     "sentence-transformers>=2.2.2",
     "umap-learn>=0.5.3",
     "hdbscan>=0.8.29",
@@ -43,6 +43,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# CUDA support - install with: pip install polismath_commentgraph[cuda]
+cuda = [
+    "torch>=1.11.0",
+]
+
 dev = [
     # Reference the parent project for development
     # This allows us to use shared dev tools while keeping Lambda isolated
